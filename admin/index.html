@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeSpace Admin | Awareness-Team Portal</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/icon-192.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="antialiased">
+
+<!-- ── HEADER ─────────────────────────────────────────────────────────── -->
+<nav class="glass-nav sticky w-full z-40 top-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center gap-3">
+                <a href="../" class="flex items-center gap-2">
+                    <i class="fas fa-shield-alt text-xl" style="color:var(--blue)"></i>
+                    <span class="text-lg font-extrabold tracking-tight">Safe<span style="color:var(--blue)">Space</span></span>
+                </a>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold" style="background:rgba(167,139,250,0.15);color:var(--violet)">Awareness Team Portal</span>
+            </div>
+            <div class="flex items-center gap-4 text-sm font-medium">
+                <a href="../" class="btn-ghost px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5">
+                    <i class="fas fa-external-link-alt"></i> Zur Hauptseite
+                </a>
+                <div id="user-badge" class="hidden flex items-center gap-3">
+                    <span class="text-xs text-slate-400 font-mono" id="username-display">admin</span>
+                    <button id="logout-btn" class="btn-ghost px-3 py-1.5 rounded-lg text-xs text-red-400 hover:text-red-300">
+                        <i class="fas fa-sign-out-alt"></i> Abmelden
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- ── LOGIN FORM (when logged out) ─────────────────────────────────── -->
+    <div id="login-container" class="max-w-md mx-auto my-12">
+        <div class="card p-8 shadow-2xl relative">
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3" style="background:rgba(79,156,249,0.1)">
+                    <i class="fas fa-lock text-xl" style="color:var(--blue)"></i>
+                </div>
+                <h1 class="text-2xl font-extrabold text-white">Team Login</h1>
+                <p class="text-slate-400 text-xs mt-1">Sicherer Zugang für das Awareness- & Interventionsteam</p>
+            </div>
+
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1" for="login-user">Benutzername</label>
+                    <input type="text" id="login-user" class="w-full px-4 py-3 rounded-xl text-sm" placeholder="admin" required autocomplete="username">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1" for="login-pass">Passwort</label>
+                    <input type="password" id="login-pass" class="w-full px-4 py-3 rounded-xl text-sm" placeholder="••••••••••••" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-primary w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2">
+                    <i class="fas fa-sign-in-alt"></i> Anmelden
+                </button>
+            </form>
+
+            <div class="mt-6 p-3 rounded-xl text-xs text-slate-400 border border-slate-800 bg-slate-900/50">
+                <span class="font-bold text-amber-400"><i class="fas fa-info-circle"></i> Standard-Zugang:</span>
+                <span class="font-mono text-slate-300"> admin / safespace2026</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── DASHBOARD (when authenticated) ───────────────────────────────── -->
+    <div id="dashboard-container" class="hidden space-y-8">
+
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="card p-5">
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Eingegangen</div>
+                <div class="text-2xl font-mono font-bold" style="color:var(--blue)" id="stat-count-received">0</div>
+            </div>
+            <div class="card p-5">
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">In Prüfung</div>
+                <div class="text-2xl font-mono font-bold" style="color:var(--amber)" id="stat-count-review">0</div>
+            </div>
+            <div class="card p-5">
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Maßnahme</div>
+                <div class="text-2xl font-mono font-bold" style="color:var(--violet)" id="stat-count-action">0</div>
+            </div>
+            <div class="card p-5">
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Abgeschlossen</div>
+                <div class="text-2xl font-mono font-bold" style="color:var(--emerald)" id="stat-count-resolved">0</div>
+            </div>
+        </div>
+
+        <!-- Filters & Actions -->
+        <div class="card p-5 flex flex-wrap gap-4 items-center justify-between">
+            <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[280px]">
+                <div class="relative flex-1 min-w-[200px]">
+                    <i class="fas fa-search absolute left-3.5 top-3.5 text-xs text-slate-500"></i>
+                    <input type="text" id="filter-search" class="w-full pl-9 pr-4 py-2.5 rounded-xl text-xs" placeholder="Nach ID, Ort oder Inhalt filtern...">
+                </div>
+                <select id="filter-status" class="px-3 py-2.5 rounded-xl text-xs">
+                    <option value="">Alle Status</option>
+                    <option value="received">Eingegangen</option>
+                    <option value="review">In Prüfung</option>
+                    <option value="action">Maßnahme ergriffen</option>
+                    <option value="resolved">Abgeschlossen</option>
+                </select>
+                <button id="refresh-btn" class="btn-ghost px-3 py-2 rounded-xl text-xs flex items-center gap-1.5" title="Neu laden">
+                    <i class="fas fa-sync-alt"></i> Aktualisieren
+                </button>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="export-csv-btn" class="btn-ghost px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5">
+                    <i class="fas fa-file-csv"></i> CSV Export
+                </button>
+                <button id="export-json-btn" class="btn-ghost px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5">
+                    <i class="fas fa-file-code"></i> JSON Export
+                </button>
+            </div>
+        </div>
+
+        <!-- Incident Reports Table -->
+        <div class="card overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="text-xs uppercase bg-slate-900/80 text-slate-400 border-b border-slate-800">
+                        <tr>
+                            <th class="px-5 py-4">ID</th>
+                            <th class="px-5 py-4">Kategorie</th>
+                            <th class="px-5 py-4">Ort</th>
+                            <th class="px-5 py-4">Zeitpunkt</th>
+                            <th class="px-5 py-4">Schweregrad</th>
+                            <th class="px-5 py-4">Status</th>
+                            <th class="px-5 py-4">Chat</th>
+                            <th class="px-5 py-4 text-right">Aktion</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reports-table-body" class="divide-y divide-slate-800/60">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="no-reports-msg" class="hidden text-center py-12 text-slate-500 text-sm">
+                <i class="fas fa-inbox text-3xl mb-2 block opacity-40"></i>
+                Keine Meldungen für die ausgewählten Filter gefunden.
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ── REPORT DETAIL MODAL ─────────────────────────────────────────── -->
+    <div id="detail-modal" class="modal-overlay">
+        <div class="card max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 space-y-6 shadow-2xl relative">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div class="flex items-center gap-3">
+                    <span class="font-mono text-xl font-bold" style="color:var(--blue)" id="modal-report-id"></span>
+                    <span id="modal-status-badge" class="badge"></span>
+                </div>
+                <button id="close-modal-btn" class="btn-ghost w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Meta details grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
+                <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                    <div class="text-slate-500 mb-1">Kategorie</div>
+                    <div class="font-bold text-white text-sm" id="modal-cat"></div>
+                </div>
+                <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                    <div class="text-slate-500 mb-1">Ort</div>
+                    <div class="font-bold text-white text-sm" id="modal-loc"></div>
+                </div>
+                <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                    <div class="text-slate-500 mb-1">Zeitpunkt</div>
+                    <div class="font-bold text-white text-sm" id="modal-time"></div>
+                </div>
+                <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                    <div class="text-slate-500 mb-1">Schweregrad</div>
+                    <div class="font-bold text-white text-sm" id="modal-sev"></div>
+                </div>
+                <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 col-span-2">
+                    <div class="text-slate-500 mb-1">Eingegangen am</div>
+                    <div class="font-mono text-slate-300 text-sm" id="modal-created"></div>
+                </div>
+            </div>
+
+            <!-- Incident description -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Schilderung des Vorfalls</label>
+                <div class="p-4 rounded-xl text-sm leading-relaxed bg-slate-900 border border-slate-800 text-slate-200 whitespace-pre-wrap" id="modal-desc"></div>
+            </div>
+
+            <!-- Attachments (clean & sanitized) -->
+            <div id="modal-attachments-container" class="hidden">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Anonymisierte Beweise / Fotos</label>
+                <div id="modal-attachments-list" class="flex flex-wrap gap-3"></div>
+            </div>
+
+            <!-- Workflow management form -->
+            <form id="update-status-form" class="space-y-4 border-t border-slate-800 pt-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5" for="update-status-select">Bearbeitungsstatus</label>
+                        <select id="update-status-select" class="w-full px-3 py-2.5 rounded-xl text-sm">
+                            <option value="received">Eingegangen</option>
+                            <option value="review">In Prüfung durch Awareness-Team</option>
+                            <option value="action">Maßnahme mit Veranstalter eingeleitet</option>
+                            <option value="resolved">Abgeschlossen</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5" for="update-public-notes">Öffentliche Notiz für Melder</label>
+                        <input type="text" id="update-public-notes" class="w-full px-3 py-2.5 rounded-xl text-sm" placeholder="Sichtbar für den Melder bei Statusabfrage">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5" for="update-internal-notes">Interne Team-Dokumentation (Vertraulich)</label>
+                    <textarea id="update-internal-notes" rows="3" class="w-full px-3 py-2.5 rounded-xl text-sm" placeholder="Interne Protokolle, Kontakt mit Veranstalter:innen, getroffene Maßnahmen..."></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button type="submit" class="btn-primary px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2">
+                        <i class="fas fa-save"></i> Änderungen speichern
+                    </button>
+                </div>
+            </form>
+
+            <!-- Anonymous communication / Chat with reporter -->
+            <div class="border-t border-slate-800 pt-5 space-y-3">
+                <div class="flex items-center justify-between">
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Anonymer Dialog mit meldender Person</label>
+                    <span class="text-xs text-slate-500 font-mono">Ende-zu-Ende anonym</span>
+                </div>
+                <div id="modal-messages-thread" class="space-y-2.5 max-h-48 overflow-y-auto p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs">
+                    <!-- Message bubbles -->
+                </div>
+                <form id="team-reply-form" class="flex gap-2">
+                    <input type="text" id="team-reply-input" class="flex-1 px-3 py-2 rounded-xl text-xs" placeholder="Anonyme Nachricht oder Rückfrage an den Melder senden..." required>
+                    <button type="submit" class="btn-ghost px-4 py-2 rounded-xl text-xs font-bold text-blue-400 hover:text-blue-300">
+                        <i class="fas fa-paper-plane mr-1"></i> Senden
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+<div id="toast-container" aria-live="polite"></div>
+
+<script type="module" src="../js/admin.js"></script>
+</body>
+</html>

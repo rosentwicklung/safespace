@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local database & uploads
+data/*.db
+data/*.db-wal
+data/*.db-shm
+uploads/*.jpg
+uploads/*.png
+uploads/*.webp
+
+# OS
+.DS_Store
+Thumbs.db

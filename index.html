@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0e16">
+    <meta name="description" content="SafeSpace – Deine anonyme und sichere Plattform für die Meldung von Übergriffen und Diskriminierung bei Veranstaltungen und im Nachtleben.">
+    <title>SafeSpace | Gemeinsam für eine sicherere Event-Kultur</title>
+
+    <!-- PWA & Favicon -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="assets/icon-192.svg">
+    <link rel="apple-touch-icon" href="assets/icon-192.svg">
+
+    <!-- External Assets -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Modular Custom Stylesheet -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="antialiased">
+
+<!-- a11y Skip Link -->
+<a href="#report" class="skip-link">Zum Inhalt springen</a>
+
+<!-- ── NAVIGATION ─────────────────────────────────────────────────────────── -->
+<nav class="glass-nav fixed w-full z-50 top-0" aria-label="Hauptnavigation">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            
+            <!-- Brand Logo -->
+            <a href="#" class="flex items-center gap-2 group focus:outline-none" aria-label="SafeSpace Startseite">
+                <i class="fas fa-shield-alt text-xl group-hover:scale-105 transition-transform" style="color:var(--blue)"></i>
+                <span class="text-lg font-extrabold tracking-tight">Safe<span style="color:var(--blue)">Space</span></span>
+            </a>
+
+            <!-- Desktop Links -->
+            <div class="hidden md:flex gap-6 text-sm font-medium items-center">
+                <a href="#about" class="text-slate-300 hover:text-white transition-colors" data-i18n="nav_about">Über uns</a>
+                <a href="#report" class="text-slate-300 hover:text-white transition-colors" data-i18n="nav_report">Vorfall melden</a>
+                <a href="#process" class="text-slate-300 hover:text-white transition-colors" data-i18n="nav_process">Ablauf</a>
+                <a href="#help" class="text-slate-300 hover:text-white transition-colors" data-i18n="nav_help">Hilfe & Kontakt</a>
+                <a href="#glossary" class="text-slate-300 hover:text-white transition-colors" data-i18n="nav_glossary">Glossar</a>
+                <a href="#status" class="text-slate-300 hover:text-white transition-colors" data-i18n="nav_status">Status prüfen</a>
+                <a href="admin/" class="text-xs text-slate-400 hover:text-violet-400 flex items-center gap-1 transition-colors" title="Awareness-Team Login">
+                    <i class="fas fa-user-shield text-violet-400"></i> <span data-i18n="nav_admin">Team-Login</span>
+                </a>
+            </div>
+
+            <!-- Controls: Lang Switcher, CTA, Mobile Toggle -->
+            <div class="flex items-center gap-3">
+                
+                <!-- Language Selector -->
+                <div class="lang-switcher">
+                    <button class="lang-btn" id="lang-btn" aria-haspopup="true" aria-expanded="false" aria-label="Sprache auswählen">
+                        <span id="cur-flag">🇩🇪</span>
+                        <span id="cur-code">DE</span>
+                        <i class="fas fa-chevron-down text-xs opacity-50 ml-1"></i>
+                    </button>
+                    <div class="lang-dropdown" id="lang-dd" role="menu">
+                        <div class="lang-opt" data-lang="de" role="menuitem"><span>🇩🇪</span> Deutsch</div>
+                        <div class="lang-opt" data-lang="en" role="menuitem"><span>🇬🇧</span> English</div>
+                        <div class="lang-opt" data-lang="tr" role="menuitem"><span>🇹🇷</span> Türkçe</div>
+                        <div class="lang-opt" data-lang="ru" role="menuitem"><span>🇷🇺</span> Русский</div>
+                        <div class="lang-opt" data-lang="fr" role="menuitem"><span>🇫🇷</span> Français</div>
+                        <div class="lang-opt" data-lang="es" role="menuitem"><span>🇪🇸</span> Español</div>
+                        <div class="lang-opt" data-lang="it" role="menuitem"><span>🇮🇹</span> Italiano</div>
+                    </div>
+                </div>
+
+                <a href="#report" class="hidden sm:inline-flex btn-primary px-5 py-2 rounded-full text-sm" data-i18n="nav_cta">Jetzt Melden</a>
+
+                <!-- Mobile Hamburger Button -->
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-slate-400 hover:text-white focus:outline-none" aria-label="Navigation umschalten" aria-expanded="false" aria-controls="mobile-menu">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Drawer Menu -->
+    <div id="mobile-menu" class="md:hidden glass-nav border-t border-slate-800 px-6 py-5 space-y-4 shadow-2xl">
+        <div class="flex flex-col gap-3.5 text-sm font-medium">
+            <a href="#about" class="text-slate-300 hover:text-white py-1" data-i18n="nav_about">Über uns</a>
+            <a href="#report" class="text-slate-300 hover:text-white py-1" data-i18n="nav_report">Vorfall melden</a>
+            <a href="#process" class="text-slate-300 hover:text-white py-1" data-i18n="nav_process">Ablauf</a>
+            <a href="#help" class="text-slate-300 hover:text-white py-1" data-i18n="nav_help">Hilfe & Kontakt</a>
+            <a href="#glossary" class="text-slate-300 hover:text-white py-1" data-i18n="nav_glossary">Glossar</a>
+            <a href="#status" class="text-slate-300 hover:text-white py-1" data-i18n="nav_status">Status prüfen</a>
+            <a href="admin/" class="text-xs text-violet-400 py-1 flex items-center gap-1.5">
+                <i class="fas fa-user-shield"></i> <span data-i18n="nav_admin">Team-Login</span>
+            </a>
+            <a href="#report" class="btn-primary w-full py-2.5 rounded-xl text-center text-sm font-bold mt-2" data-i18n="nav_cta">Jetzt Melden</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ── HERO ───────────────────────────────────────────────────────────────── -->
+<header class="relative pt-36 pb-24 lg:pt-52 lg:pb-36 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <h1 class="text-4xl md:text-6xl font-extrabold mb-6 fade-up leading-tight tracking-tight">
+            <span data-i18n="hero_pre">Eine sicherere</span> <span class="gradient-text" data-i18n="hero_hl">Event-Kultur</span><span data-i18n="hero_post"> für alle.</span>
+        </h1>
+        <p class="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mb-10 fade-up" style="animation-delay:.1s" data-i18n="hero_sub">
+            Anonym, sicher und diskret. SafeSpace ist deine Plattform für die Meldung von Übergriffen und Diskriminierung bei Veranstaltungen.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4 fade-up" style="animation-delay:.2s">
+            <a href="#report" class="btn-primary px-8 py-4 rounded-xl text-base sm:text-lg">
+                <i class="fas fa-paper-plane mr-2" aria-hidden="true"></i><span data-i18n="hero_cta1">Vorfall melden</span>
+            </a>
+            <a href="#about" class="btn-ghost px-8 py-4 rounded-xl text-base sm:text-lg font-bold" data-i18n="hero_cta2">Mehr erfahren</a>
+        </div>
+    </div>
+    <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div class="absolute -top-32 left-1/3 w-[500px] h-[500px] rounded-full blur-[130px]" style="background:rgba(79,156,249,0.12)"></div>
+        <div class="absolute top-1/2 right-1/4 w-96 h-96 rounded-full blur-[120px]" style="background:rgba(167,139,250,0.07)"></div>
+    </div>
+</header>
+
+<main>
+<!-- ── FEATURES ───────────────────────────────────────────────────────────── -->
+<section id="about" class="py-20" style="background:rgba(17,24,39,0.4)" aria-labelledby="features-title">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 id="features-title" class="sr-only">Vorteile und Funktionen</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="card p-8 hover:-translate-y-1 transition-transform duration-300">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background:rgba(79,156,249,0.12)">
+                    <i class="fas fa-user-secret text-lg" style="color:var(--blue)" aria-hidden="true"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-3 text-white" data-i18n="f1t">100% Anonym</h3>
+                <p class="text-slate-300 text-sm leading-relaxed" data-i18n="f1d">Wir speichern keine IP-Adressen oder persönlichen Daten. Deine Meldung bleibt absolut anonym.</p>
+            </div>
+            <div class="card p-8 hover:-translate-y-1 transition-transform duration-300">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background:rgba(167,139,250,0.12)">
+                    <i class="fas fa-lock text-lg" style="color:var(--violet)" aria-hidden="true"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-3 text-white" data-i18n="f2t">Sicher & Verschlüsselt</h3>
+                <p class="text-slate-300 text-sm leading-relaxed" data-i18n="f2d">Alle Daten werden verschlüsselt übertragen und direkt an unser geschultes Awareness-Team weitergeleitet.</p>
+            </div>
+            <div class="card p-8 hover:-translate-y-1 transition-transform duration-300">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background:rgba(52,211,153,0.12)">
+                    <i class="fas fa-hands-helping text-lg" style="color:var(--emerald)" aria-hidden="true"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-3 text-white" data-i18n="f3t">Schnelle Hilfe</h3>
+                <p class="text-slate-300 text-sm leading-relaxed" data-i18n="f3d">Wir prüfen jede Meldung sorgfältig und leiten notwendige Schritte ein, um Events sicherer zu machen.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── REPORT FORM ─────────────────────────────────────────────────────────── -->
+<section id="report" class="py-24" aria-labelledby="form-heading">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Spam rate limit indicator -->
+        <div id="rate-info" class="mb-4 flex items-center justify-between text-xs text-slate-400">
+            <span data-i18n="rate_label">Tägliches Melde-Limit</span>
+            <span id="rate-count" class="font-mono font-bold" style="color:var(--blue)">0 von 3</span>
+        </div>
+        <div class="rate-bar mb-6" aria-hidden="true"><div class="rate-fill" id="rate-fill" style="width:0%"></div></div>
+
+        <!-- Form card -->
+        <div class="card p-8 md:p-12 shadow-2xl relative overflow-hidden" id="form-card">
+            <div class="absolute -top-8 -right-8 opacity-5 text-9xl pointer-events-none" aria-hidden="true">
+                <i class="fas fa-file-shield"></i>
+            </div>
+            <div class="text-xs font-bold tracking-widest uppercase mb-2" style="color:var(--blue)" data-i18n="form_section_label">Meldung einreichen</div>
+            <h2 id="form-heading" class="text-2xl sm:text-3xl font-extrabold mb-2 text-white" data-i18n="form_title">Vorfall melden</h2>
+            <p class="text-slate-300 mb-8 text-sm" data-i18n="form_sub">Bitte beschreibe den Vorfall so detailliert wie möglich. Deine Identität bleibt geschützt.</p>
+
+            <form id="report-form" class="space-y-5" novalidate>
+                <!-- Honeypot -->
+                <div class="hp-field" aria-hidden="true">
+                    <label for="hp-name">Bot-Schutz (leer lassen)</label>
+                    <input type="text" id="hp-name" name="name" tabindex="-1" autocomplete="off">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="space-y-1.5">
+                        <label for="f-cat" class="text-xs font-bold text-slate-300 uppercase tracking-wide" data-i18n="lbl_cat">Kategorie</label>
+                        <select id="f-cat" class="w-full px-4 py-3 rounded-xl appearance-none cursor-pointer text-sm">
+                            <option value="Belästigung" data-i18n="cat1">Belästigung</option>
+                            <option value="Diskriminierung" data-i18n="cat2">Diskriminierung</option>
+                            <option value="Physische Gewalt" data-i18n="cat3">Physische Gewalt</option>
+                            <option value="Diebstahl / Vandalismus" data-i18n="cat4">Diebstahl / Vandalismus</option>
+                            <option value="Sonstiges" data-i18n="cat5">Sonstiges</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1.5">
+                        <label for="f-loc" class="text-xs font-bold text-slate-300 uppercase tracking-wide" data-i18n="lbl_loc">Ort</label>
+                        <input type="text" id="f-loc" class="w-full px-4 py-3 rounded-xl text-sm" placeholder="z.B. Festival, Club, Bar" data-i18n-ph="ph_loc">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="space-y-1.5">
+                        <label for="f-dt" class="text-xs font-bold text-slate-300 uppercase tracking-wide" data-i18n="lbl_dt">Zeitpunkt</label>
+                        <input type="datetime-local" id="f-dt" class="w-full px-4 py-3 rounded-xl text-sm">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label for="f-sev" class="text-xs font-bold text-slate-300 uppercase tracking-wide" data-i18n="lbl_sev">Schweregrad</label>
+                        <select id="f-sev" class="w-full px-4 py-3 rounded-xl appearance-none cursor-pointer text-sm">
+                            <option value="😟 Unangenehm" data-i18n="sev1">😟 Unangenehm</option>
+                            <option value="⚠️ Ernsthaft" data-i18n="sev2">⚠️ Ernsthaft</option>
+                            <option value="🚨 Notfall" data-i18n="sev3">🚨 Notfall</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="f-msg" class="text-xs font-bold text-slate-300 uppercase tracking-wide" data-i18n="lbl_desc">Beschreibung</label>
+                    <textarea id="f-msg" rows="5" class="w-full px-4 py-3 rounded-xl resize-none text-sm" placeholder="Was ist passiert? Wer war beteiligt? (mind. 20 Zeichen)" data-i18n-ph="ph_desc" required minlength="20"></textarea>
+                    <div class="flex justify-between text-xs text-slate-500">
+                        <span data-i18n="desc_hint">Mindestens 20 Zeichen</span>
+                        <span><span id="char-count" class="font-mono">0</span> / 20+</span>
+                    </div>
+                </div>
+
+                <!-- Anonymous Evidence Upload with EXIF Stripping -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-300 uppercase tracking-wide" data-i18n="lbl_files">Beweise & Fotos (optional)</label>
+                    <div class="dropzone" id="file-dropzone" tabindex="0" role="button" aria-label="Dateien hochladen">
+                        <input type="file" id="file-input" class="hidden" accept="image/jpeg,image/png,image/webp" multiple>
+                        <i class="fas fa-cloud-upload-alt text-2xl text-blue-400 mb-2"></i>
+                        <p class="text-sm font-bold text-white mb-1" data-i18n="ph_files_drop">Fotos hier ablegen oder durchsuchen</p>
+                        <p class="text-xs text-slate-400" data-i18n="ph_files_hint">Fotos werden vor der Übertragung im Browser anonymisiert (GPS & EXIF-Daten entfernt). Max. 3 Dateien.</p>
+                    </div>
+                    <div id="file-preview-list" class="space-y-1.5"></div>
+                </div>
+
+                <!-- Spam warning -->
+                <div id="spam-warn" class="hidden p-4 rounded-xl flex items-start gap-3" style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3)">
+                    <i class="fas fa-exclamation-triangle mt-0.5" style="color:var(--red)" aria-hidden="true"></i>
+                    <p class="text-xs leading-relaxed" style="color:#fca5a5" data-i18n="spam_msg"></p>
+                </div>
+
+                <!-- Info box -->
+                <div class="p-4 rounded-xl flex items-start gap-3" style="background:rgba(79,156,249,0.07);border:1px solid rgba(79,156,249,0.15)">
+                    <i class="fas fa-shield-alt mt-0.5" style="color:var(--blue)" aria-hidden="true"></i>
+                    <p class="text-xs leading-relaxed text-slate-300" data-i18n="form_info">Deine Meldung wird verschlüsselt an die Datenbank übertragen. Bei Verbindungsproblemen steht eine E-Mail-Vorlage bereit.</p>
+                </div>
+
+                <button type="submit" id="submit-btn" class="btn-primary w-full py-4 rounded-xl text-base flex items-center justify-center gap-2">
+                    <span data-i18n="btn_submit">Meldung sicher absenden</span>
+                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- ── CONFIRMATION SCREEN (replaces form on success) ── -->
+        <div id="confirmation-screen" class="card p-8 md:p-12 shadow-2xl relative overflow-hidden hidden" aria-live="polite">
+            <div class="absolute -top-6 -right-6 opacity-5 text-8xl pointer-events-none" aria-hidden="true">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 pop-in" style="background:rgba(52,211,153,0.2);border:2px solid var(--emerald)">
+                    <i class="fas fa-check text-xl" style="color:var(--emerald)" aria-hidden="true"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-extrabold text-white" data-i18n="conf_title">Danke für deine Zivilcourage!</h3>
+                    <p class="text-sm text-slate-300" data-i18n="conf_sub">Deine Meldung wurde erfolgreich übermittelt.</p>
+                </div>
+            </div>
+
+            <!-- Reference ID -->
+            <div class="p-4 rounded-xl mb-6" style="background:rgba(79,156,249,0.07);border:1px solid rgba(79,156,249,0.2)">
+                <p class="text-xs text-slate-400 mb-1" data-i18n="conf_ref_label">Deine anonyme Referenz-ID</p>
+                <div class="flex items-center justify-between">
+                    <span class="font-mono text-2xl font-bold" style="color:var(--blue)" id="conf-ref-id"></span>
+                    <button id="copy-id-btn" class="text-xs btn-ghost px-3.5 py-2 rounded-lg flex items-center gap-2">
+                        <i class="far fa-copy" aria-hidden="true"></i> <span data-i18n="copy_id">Kopieren</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-4 rounded-xl mb-6" style="background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.2)">
+                <p class="text-xs font-bold mb-1" style="color:var(--amber)" data-i18n="conf_save_title">Wichtig: Speichere diese ID!</p>
+                <p class="text-xs text-slate-300" data-i18n="conf_save_desc">Mit dieser ID kannst du den Bearbeitungsstatus deiner Meldung anonym verfolgen. Wir können dir diese ID nicht erneut zusenden.</p>
+            </div>
+
+            <!-- Summary details -->
+            <div class="space-y-2 mb-6 text-sm">
+                <div class="flex justify-between py-2 border-b" style="border-color:var(--card-border)">
+                    <span class="text-slate-400" data-i18n="lbl_cat">Kategorie</span>
+                    <span class="font-medium text-white" id="conf-cat"></span>
+                </div>
+                <div class="flex justify-between py-2 border-b" style="border-color:var(--card-border)">
+                    <span class="text-slate-400" data-i18n="lbl_sev">Schweregrad</span>
+                    <span id="conf-sev" class="badge badge-review"></span>
+                </div>
+                <div class="flex justify-between py-2">
+                    <span class="text-slate-400" data-i18n="lbl_loc">Ort</span>
+                    <span class="font-medium text-white" id="conf-loc"></span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button id="copy-email-btn" class="btn-ghost py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2">
+                    <i class="far fa-copy" aria-hidden="true"></i> <span data-i18n="copy_email_text">E-Mail-Text kopieren</span>
+                </button>
+                <button id="new-report-btn" class="btn-ghost py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2" style="border-color:rgba(79,156,249,0.3);color:var(--blue)">
+                    <i class="fas fa-plus" aria-hidden="true"></i> <span data-i18n="new_report">Neue Meldung</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ── WHAT HAPPENS NEXT ───────────────────────────────────────────────────── -->
+<section id="process" class="py-24" style="background:rgba(17,24,39,0.4)" aria-labelledby="proc-heading">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-xs font-bold tracking-widest uppercase text-center mb-2" style="color:var(--blue)" data-i18n="proc_label">Transparenz</div>
+        <h2 id="proc-heading" class="text-3xl font-extrabold text-center text-white mb-4" data-i18n="proc_title">Was passiert mit deiner Meldung?</h2>
+        <p class="text-slate-300 text-center mb-14 text-sm" data-i18n="proc_sub">Wir glauben an Transparenz. Hier erfährst du genau, was nach deiner Meldung passiert.</p>
+
+        <div class="space-y-10">
+            <div class="timeline-step">
+                <div class="timeline-dot" style="background:rgba(79,156,249,0.2);color:var(--blue)">1</div>
+                <div class="card p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center" style="background:rgba(79,156,249,0.1)">
+                            <i class="fas fa-paper-plane" style="color:var(--blue)" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white mb-1" data-i18n="step1_title">Eingang & Bestätigung</h3>
+                            <p class="text-sm text-slate-300 leading-relaxed" data-i18n="step1_desc">Deine Meldung wird empfangen. Du erhältst sofort eine anonyme Referenz-ID zur Nachverfolgung. Keine persönlichen Daten werden gespeichert.</p>
+                            <div class="mt-2"><span class="badge badge-received" data-i18n="step1_badge">Eingegangen</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-step">
+                <div class="timeline-dot" style="background:rgba(251,191,36,0.2);color:var(--amber)">2</div>
+                <div class="card p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center" style="background:rgba(251,191,36,0.1)">
+                            <i class="fas fa-search" style="color:var(--amber)" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white mb-1" data-i18n="step2_title">Prüfung durch das Awareness-Team</h3>
+                            <p class="text-sm text-slate-300 leading-relaxed" data-i18n="step2_desc">Unser geschultes Team sichtet die Meldung innerhalb von 48 Stunden und prüft, welche Schritte erforderlich sind.</p>
+                            <div class="mt-2"><span class="badge badge-review" data-i18n="step2_badge">In Bearbeitung</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-step">
+                <div class="timeline-dot" style="background:rgba(167,139,250,0.2);color:var(--violet)">3</div>
+                <div class="card p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center" style="background:rgba(167,139,250,0.1)">
+                            <i class="fas fa-comments" style="color:var(--violet)" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white mb-1" data-i18n="step3_title">Kontaktaufnahme (optional)</h3>
+                            <p class="text-sm text-slate-300 leading-relaxed" data-i18n="step3_desc">Falls nötig, kann das Team anonyme Rückfragen über das Portal stellen – ohne deine Identität zu kennen.</p>
+                            <div class="mt-2"><span class="badge badge-action" data-i18n="step3_badge">Rückfrage möglich</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-step">
+                <div class="timeline-dot" style="background:rgba(52,211,153,0.2);color:var(--emerald)">4</div>
+                <div class="card p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center" style="background:rgba(52,211,153,0.1)">
+                            <i class="fas fa-check-double" style="color:var(--emerald)" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white mb-1" data-i18n="step4_title">Maßnahmen & Abschluss</h3>
+                            <p class="text-sm text-slate-300 leading-relaxed" data-i18n="step4_desc">Wir informieren Veranstalter:innen, dokumentieren Muster und ergreifen Maßnahmen. Deine Meldung hilft, Events für alle sicherer zu machen.</p>
+                            <div class="mt-2"><span class="badge badge-resolved" data-i18n="step4_badge">Abgeschlossen</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── HELP & CONTACTS ─────────────────────────────────────────────────────── -->
+<section id="help" class="py-24 border-t" style="border-color:var(--card-border)" aria-labelledby="help-heading">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-xs font-bold tracking-widest uppercase text-center mb-2" style="color:var(--blue)" data-i18n="help_label">Unterstützung</div>
+        <h2 id="help-heading" class="text-3xl font-extrabold text-center text-white mb-4" data-i18n="help_title">Hilfe in Bremen</h2>
+        <p class="text-slate-300 text-center mb-12 text-sm" data-i18n="help_sub">Du bist nicht allein. Hier findest du Anlaufstellen, die dir schnell und vertraulich helfen.</p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <div class="card p-8 rounded-2xl text-center hover:-translate-y-1 transition-transform duration-300">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-5" style="background:rgba(79,156,249,0.12)">
+                    <i class="fas fa-phone-alt text-xl" style="color:var(--blue)" aria-hidden="true"></i>
+                </div>
+                <h3 class="font-bold text-white mb-2" data-i18n="help_1_name">Notruf Bremen</h3>
+                <p class="text-xs text-slate-300 mb-5 leading-relaxed" data-i18n="help_1_text">Beratungsstelle für Betroffene von Gewalt und Übergriffen.</p>
+                <a href="tel:0421151600" class="inline-flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-lg" style="background:rgba(79,156,249,0.12);color:var(--blue)">
+                    <i class="fas fa-phone text-xs" aria-hidden="true"></i> 0421 – 151 600
+                </a>
+            </div>
+
+            <div class="card p-8 rounded-2xl text-center hover:-translate-y-1 transition-transform duration-300">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-5" style="background:rgba(167,139,250,0.12)">
+                    <i class="fas fa-hands-helping text-xl" style="color:var(--violet)" aria-hidden="true"></i>
+                </div>
+                <h3 class="font-bold text-white mb-2">Rat &amp; Tat e.V.</h3>
+                <p class="text-xs text-slate-300 mb-5 leading-relaxed" data-i18n="help_2_text">Unterstützung und Beratung für die LGBTQ+ Community.</p>
+                <a href="https://ratundtat-bremen.de" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-lg" style="background:rgba(167,139,250,0.12);color:var(--violet)" data-i18n="help_btn_web">Webseite besuchen</a>
+            </div>
+
+            <div class="card p-8 rounded-2xl text-center hover:-translate-y-1 transition-transform duration-300">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-5" style="background:rgba(52,211,153,0.12)">
+                    <i class="fas fa-balance-scale text-xl" style="color:var(--emerald)" aria-hidden="true"></i>
+                </div>
+                <h3 class="font-bold text-white mb-2" data-i18n="help_3_name">AD Bremerhaven</h3>
+                <p class="text-xs text-slate-300 mb-5 leading-relaxed" data-i18n="help_3_text">Antidiskriminierungsstelle im Land Bremen.</p>
+                <a href="mailto:safespace-deutschland@proton.me" class="inline-flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-lg" style="background:rgba(52,211,153,0.12);color:var(--emerald)" data-i18n="help_btn_contact">Kontakt aufnehmen</a>
+            </div>
+
+            <div class="card p-8 rounded-2xl text-center hover:-translate-y-1 transition-transform duration-300">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-5" style="background:rgba(251,191,36,0.12)">
+                    <i class="fas fa-user-shield text-xl" style="color:var(--amber)" aria-hidden="true"></i>
+                </div>
+                <h3 class="font-bold text-white mb-2" data-i18n="help_4_name">Opferhilfe Bremen</h3>
+                <p class="text-xs text-slate-300 mb-5 leading-relaxed" data-i18n="help_4_text">Professionelle Hilfe und Begleitung nach Straftaten.</p>
+                <a href="tel:0421323500" class="inline-flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-lg" style="background:rgba(251,191,36,0.12);color:var(--amber)">
+                    <i class="fas fa-phone text-xs" aria-hidden="true"></i> 0421 – 32 35 00
+                </a>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ── GLOSSARY ────────────────────────────────────────────────────────────── -->
+<section id="glossary" class="py-24" aria-labelledby="gloss-heading">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-xs font-bold tracking-widest uppercase text-center mb-2" style="color:var(--blue)" data-i18n="gloss_label">Wissen</div>
+        <h2 id="gloss-heading" class="text-3xl font-extrabold text-center text-white mb-4" data-i18n="gloss_title">Glossar</h2>
+        <p class="text-slate-300 text-center mb-12 text-sm" data-i18n="gloss_sub">Begriffe einfach erklärt – damit du weißt, wovon wir sprechen.</p>
+        <div class="space-y-3" id="glossary-list">
+            <!-- Dynamically populated -->
+        </div>
+    </div>
+</section>
+
+<!-- ── STATUS CHECK & ANONYMOUS CHAT ───────────────────────────────────────── -->
+<section id="status" class="py-24" style="background:rgba(17,24,39,0.4)" aria-labelledby="status-heading">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-xs font-bold tracking-widest uppercase text-center mb-2" style="color:var(--blue)" data-i18n="stat_label">Status</div>
+        <h2 id="status-heading" class="text-3xl font-extrabold text-center text-white mb-4" data-i18n="stat_title">Meldung verfolgen</h2>
+        <p class="text-slate-300 text-center mb-10 text-sm" data-i18n="stat_sub">Gib deine Referenz-ID ein, um den aktuellen Bearbeitungsstand zu sehen.</p>
+
+        <div class="card p-6 md:p-8 space-y-6">
+            <div class="flex gap-3">
+                <input type="text" id="status-input" class="flex-1 px-4 py-3 rounded-xl text-sm font-mono uppercase" placeholder="z.B. SS-9X4K2A" data-i18n-ph="stat_ph" maxlength="12" aria-label="Referenz ID">
+                <button id="status-btn" class="btn-primary px-6 py-3 rounded-xl text-sm font-bold whitespace-nowrap" data-i18n="stat_btn">Status prüfen</button>
+            </div>
+
+            <div id="status-result" class="hidden space-y-6 pt-4 border-t border-slate-800" aria-live="polite">
+                <div id="status-found" class="hidden space-y-6">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-bold text-white" data-i18n="stat_found">Meldung gefunden</span>
+                        <span id="status-badge-el" class="badge badge-received">Eingegangen</span>
+                    </div>
+                    
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between py-2 border-b" style="border-color:var(--card-border)">
+                            <span class="text-slate-400" data-i18n="stat_res_cat">Kategorie</span>
+                            <span class="text-white font-medium" id="st-cat"></span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b" style="border-color:var(--card-border)">
+                            <span class="text-slate-400" data-i18n="stat_res_time">Eingegangen am</span>
+                            <span class="text-white font-medium font-mono text-xs" id="st-time"></span>
+                        </div>
+                        <div class="flex justify-between py-2">
+                            <span class="text-slate-400" data-i18n="stat_res_note">Aktueller Stand</span>
+                            <span class="text-slate-300 text-xs text-right max-w-[60%]" id="st-note"></span>
+                        </div>
+                    </div>
+
+                    <!-- Live Anonymous Chat with Awareness Team -->
+                    <div class="pt-4 border-t border-slate-800 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300" data-i18n="chat_title">Anonymer Nachrichtenaustausch</h3>
+                            <span class="text-[10px] text-slate-500 font-mono">Ende-zu-Ende anonym</span>
+                        </div>
+                        <div id="user-chat-thread" class="space-y-2 max-h-48 overflow-y-auto p-3 rounded-xl bg-slate-950 border border-slate-800">
+                            <!-- Populated with messages -->
+                        </div>
+                        <form id="user-chat-form" class="flex gap-2">
+                            <input type="text" id="user-chat-input" class="flex-1 px-3 py-2 rounded-xl text-xs" placeholder="Antwort oder Ergänzung schreiben..." data-i18n-ph="chat_ph" required>
+                            <button type="submit" class="btn-ghost px-4 py-2 rounded-xl text-xs font-bold text-blue-400 hover:text-blue-300" data-i18n="chat_btn_send">
+                                <i class="fas fa-paper-plane mr-1" aria-hidden="true"></i> Senden
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+
+                <div id="status-not-found" class="hidden text-center py-4">
+                    <i class="fas fa-search text-3xl text-slate-600 mb-3 block" aria-hidden="true"></i>
+                    <p class="text-slate-400 text-sm" data-i18n="stat_not_found">Keine Meldung mit dieser ID gefunden. Bitte prüfe die ID und versuche es erneut.</p>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-center text-xs text-slate-500 mt-4" data-i18n="stat_note">Der Status wird live über das sichere Backend synchronisiert.</p>
+    </div>
+</section>
+
+<!-- ── SECURITY BADGES ─────────────────────────────────────────────────────── -->
+<section class="py-16 border-t" style="border-color:var(--card-border)" aria-labelledby="sec-heading">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+        <h2 id="sec-heading" class="text-xl font-bold mb-8 text-white" data-i18n="sec_title">Deine Sicherheit hat Priorität</h2>
+        <div class="flex flex-wrap justify-center gap-10 opacity-75">
+            <div class="flex items-center gap-2 text-sm text-slate-300"><i class="fas fa-fingerprint" style="color:var(--blue)" aria-hidden="true"></i><span data-i18n="sec1">Kein Tracking</span></div>
+            <div class="flex items-center gap-2 text-sm text-slate-300"><i class="fas fa-camera-slash" style="color:var(--blue)" aria-hidden="true"></i><span data-i18n="sec2">EXIF-Metadaten Stripping</span></div>
+            <div class="flex items-center gap-2 text-sm text-slate-300"><i class="fas fa-user-shield" style="color:var(--blue)" aria-hidden="true"></i><span data-i18n="sec3">Ende-zu-Ende Schutz</span></div>
+            <div class="flex items-center gap-2 text-sm text-slate-300"><i class="fas fa-shield-virus" style="color:var(--blue)" aria-hidden="true"></i><span data-i18n="sec4">Spam-Schutz</span></div>
+        </div>
+    </div>
+</section>
+</main>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
+<footer class="py-10 border-t" style="background:var(--card-bg);border-color:var(--card-border)">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="flex items-center gap-2">
+            <i class="fas fa-shield-alt" style="color:var(--blue)" aria-hidden="true"></i>
+            <span class="font-bold text-white">SafeSpace Deutschland</span>
+        </div>
+        <p class="text-sm text-slate-400 text-center" data-i18n="footer_copy">© 2026 SafeSpace Initiative. Gebaut für eine sicherere Nachtkultur.</p>
+        <div class="flex gap-5 text-slate-400">
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors" aria-label="Instagram"><i class="fab fa-instagram text-lg" aria-hidden="true"></i></a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors" aria-label="Twitter"><i class="fab fa-twitter text-lg" aria-hidden="true"></i></a>
+            <a href="mailto:safespace-deutschland@proton.me" class="hover:text-white transition-colors" aria-label="E-Mail"><i class="fas fa-envelope text-lg" aria-hidden="true"></i></a>
+        </div>
+    </div>
+</footer>
+
+<!-- Toast Container -->
+<div id="toast-container" aria-live="polite"></div>
+
+<!-- Main Application Module -->
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
