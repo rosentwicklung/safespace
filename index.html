@@ -38,42 +38,42 @@
                 <span class="text-base sm:text-lg font-extrabold tracking-tight">Safe<span style="color:var(--teal)">Space</span></span>
             </a>
 
-            <!-- Desktop Links -->
-            <div class="hidden lg:flex gap-4 xl:gap-6 text-xs xl:text-sm font-medium items-center">
-                <a href="#about" class="flex items-center gap-1.5 hover:text-teal-400 transition-colors">
-                    <i class="fas fa-circle-info text-xs opacity-70"></i>
-                    <span data-i18n="nav_about">Über uns</span>
+            <!-- Desktop Links (Single-word, clean font, nowrap) -->
+            <div class="hidden lg:flex items-center gap-2 xl:gap-5 text-[11px] xl:text-xs font-medium whitespace-nowrap">
+                <a href="#about" class="nav-link" title="Informationen">
+                    <i class="fas fa-circle-info text-[10px] opacity-75"></i>
+                    <span data-i18n="nav_about">Info</span>
                 </a>
-                <a href="#report" class="flex items-center gap-1.5 hover:text-teal-400 transition-colors">
-                    <i class="fas fa-bullhorn text-xs opacity-70"></i>
+                <a href="#report" class="nav-link" title="Vorfall melden">
+                    <i class="fas fa-bullhorn text-[10px] opacity-75"></i>
                     <span data-i18n="nav_report">Melden</span>
                 </a>
-                <a href="#process" class="flex items-center gap-1.5 hover:text-teal-400 transition-colors">
-                    <i class="fas fa-list-check text-xs opacity-70"></i>
+                <a href="#process" class="nav-link" title="Ablauf & Schritte">
+                    <i class="fas fa-list-check text-[10px] opacity-75"></i>
                     <span data-i18n="nav_process">Ablauf</span>
                 </a>
-                <a href="#help" class="flex items-center gap-1.5 hover:text-teal-400 transition-colors">
-                    <i class="fas fa-hand-holding-heart text-xs opacity-70"></i>
+                <a href="#help" class="nav-link" title="Hilfsangebote">
+                    <i class="fas fa-hand-holding-heart text-[10px] opacity-75"></i>
                     <span data-i18n="nav_help">Hilfe</span>
                 </a>
-                <a href="#glossary" class="flex items-center gap-1.5 hover:text-teal-400 transition-colors">
-                    <i class="fas fa-book-open text-xs opacity-70"></i>
+                <a href="#glossary" class="nav-link" title="Awareness-Glossar">
+                    <i class="fas fa-book-open text-[10px] opacity-75"></i>
                     <span data-i18n="nav_glossary">Glossar</span>
                 </a>
-                <a href="#status" class="flex items-center gap-1.5 hover:text-teal-400 transition-colors">
-                    <i class="fas fa-magnifying-glass text-xs opacity-70"></i>
+                <a href="#status" class="nav-link" title="Meldungsstatus abfragen">
+                    <i class="fas fa-magnifying-glass text-[10px] opacity-75"></i>
                     <span data-i18n="nav_status">Status</span>
                 </a>
-                <a href="admin/" class="flex items-center gap-1.5 text-xs text-slate-400 hover:text-violet-400 transition-colors" title="Awareness-Team Login">
-                    <i class="fas fa-user-shield text-violet-400"></i>
+                <a href="admin/" class="nav-link text-slate-400 hover:text-violet-400" title="Awareness-Team Login">
+                    <i class="fas fa-user-shield text-violet-400 text-[10px]"></i>
                     <span data-i18n="nav_admin">Team</span>
                 </a>
             </div>
 
             <!-- Controls: Quick Exit, Theme Toggle, Lang Switcher, CTA, Mobile Toggle -->
-            <div class="flex items-center gap-2 sm:gap-2.5">
+            <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                 
-                <!-- Quick Exit Panic Button (Icon-only on mobile, compact on tablet/desktop) -->
+                <!-- Quick Exit Panic Button -->
                 <button id="quick-exit-btn" class="btn-quick-exit" title="Notfall-Exit (Tastatur: 2x Esc)" aria-label="Notfall-Exit (2x Esc)">
                     <i class="fas fa-person-running text-sm" aria-hidden="true"></i>
                     <span class="hidden sm:inline font-bold text-xs" data-i18n="quick_exit">Exit</span>
@@ -102,7 +102,7 @@
                     </div>
                 </div>
 
-                <a href="#report" class="hidden lg:inline-flex btn-primary px-3.5 py-1.5 rounded-full text-xs font-bold items-center gap-1.5 shadow-sm">
+                <a href="#report" class="hidden xl:inline-flex btn-primary px-3 py-1.5 rounded-full text-xs font-bold items-center gap-1.5 shadow-sm whitespace-nowrap">
                     <i class="fas fa-bullhorn text-[11px]" aria-hidden="true"></i>
                     <span data-i18n="nav_cta">Melden</span>
                 </a>
@@ -115,81 +115,83 @@
         </div>
     </div>
 
-    <!-- Mobile Drawer Menu -->
-    <div id="mobile-menu" class="lg:hidden glass-nav border-t border-slate-800 px-6 py-5 space-y-4 shadow-2xl">
-        <div class="flex flex-col gap-3 text-sm font-medium">
-            <a href="#about" class="flex items-center gap-2.5 text-slate-300 hover:text-white py-1">
-                <i class="fas fa-circle-info w-4 text-center text-teal-400" aria-hidden="true"></i>
-                <span data-i18n="nav_about">Über uns</span>
+    <!-- Mobile Drawer Menu (Hidden by default, slides down as overlay) -->
+    <div id="mobile-menu" class="hidden lg:hidden" aria-label="Mobiles Navigationsmenü">
+        <div class="max-w-7xl mx-auto px-4 py-3 space-y-1">
+            <a href="#about" class="mobile-nav-link">
+                <i class="fas fa-circle-info w-5 text-center text-teal-400"></i>
+                <span data-i18n="nav_about">Info</span>
             </a>
-            <a href="#report" class="flex items-center gap-2.5 text-slate-300 hover:text-white py-1">
-                <i class="fas fa-bullhorn w-4 text-center text-teal-400" aria-hidden="true"></i>
+            <a href="#report" class="mobile-nav-link">
+                <i class="fas fa-bullhorn w-5 text-center text-teal-400"></i>
                 <span data-i18n="nav_report">Melden</span>
             </a>
-            <a href="#process" class="flex items-center gap-2.5 text-slate-300 hover:text-white py-1">
-                <i class="fas fa-list-check w-4 text-center text-teal-400" aria-hidden="true"></i>
+            <a href="#process" class="mobile-nav-link">
+                <i class="fas fa-list-check w-5 text-center text-teal-400"></i>
                 <span data-i18n="nav_process">Ablauf</span>
             </a>
-            <a href="#help" class="flex items-center gap-2.5 text-slate-300 hover:text-white py-1">
-                <i class="fas fa-hand-holding-heart w-4 text-center text-teal-400" aria-hidden="true"></i>
+            <a href="#help" class="mobile-nav-link">
+                <i class="fas fa-hand-holding-heart w-5 text-center text-teal-400"></i>
                 <span data-i18n="nav_help">Hilfe</span>
             </a>
-            <a href="#glossary" class="flex items-center gap-2.5 text-slate-300 hover:text-white py-1">
-                <i class="fas fa-book-open w-4 text-center text-teal-400" aria-hidden="true"></i>
+            <a href="#glossary" class="mobile-nav-link">
+                <i class="fas fa-book-open w-5 text-center text-teal-400"></i>
                 <span data-i18n="nav_glossary">Glossar</span>
             </a>
-            <a href="#status" class="flex items-center gap-2.5 text-slate-300 hover:text-white py-1">
-                <i class="fas fa-magnifying-glass w-4 text-center text-teal-400" aria-hidden="true"></i>
+            <a href="#status" class="mobile-nav-link">
+                <i class="fas fa-magnifying-glass w-5 text-center text-teal-400"></i>
                 <span data-i18n="nav_status">Status</span>
             </a>
-            <a href="admin/" class="flex items-center gap-2.5 text-xs text-violet-400 py-1">
-                <i class="fas fa-user-shield w-4 text-center" aria-hidden="true"></i>
+            <a href="admin/" class="mobile-nav-link text-violet-400">
+                <i class="fas fa-user-shield w-5 text-center"></i>
                 <span data-i18n="nav_admin">Team</span>
             </a>
-            <a href="#report" class="btn-primary w-full py-2.5 rounded-xl text-center text-sm font-bold mt-2 flex items-center justify-center gap-2">
-                <i class="fas fa-bullhorn text-xs" aria-hidden="true"></i>
-                <span data-i18n="nav_cta">Melden</span>
-            </a>
+            <div class="pt-2">
+                <a href="#report" class="btn-primary w-full py-2.5 rounded-xl text-center text-xs font-bold flex items-center justify-center gap-2">
+                    <i class="fas fa-shield-heart text-xs" aria-hidden="true"></i>
+                    <span data-i18n="hero_cta1">Vorfall sicher melden</span>
+                </a>
+            </div>
         </div>
     </div>
 </nav>
 
 <!-- ── HERO ───────────────────────────────────────────────────────────────── -->
-<header class="relative pt-36 pb-20 lg:pt-48 lg:pb-32 overflow-hidden text-center">
+<header class="relative pt-24 pb-16 sm:pt-32 sm:pb-20 lg:pt-44 lg:pb-28 overflow-hidden text-center">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         <!-- Trust badge -->
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-6 fade-up" style="background:var(--teal-subtle);color:var(--teal);border:1px solid rgba(20,184,166,0.25)">
-            <i class="fas fa-lock text-xs"></i>
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold mb-4 sm:mb-5 fade-up" style="background:var(--teal-subtle);color:var(--teal);border:1px solid rgba(20,184,166,0.25)">
+            <i class="fas fa-lock text-[10px] sm:text-xs"></i>
             <span data-i18n="hero_pill1">100% Anonym & vertraulich</span>
         </div>
 
-        <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-6 fade-up leading-[1.15] tracking-tight text-white" style="color:var(--text-primary)">
+        <h1 class="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-5 fade-up leading-[1.2] tracking-tight text-white" style="color:var(--text-primary)">
             <span data-i18n="hero_pre">Ein geschützter Raum für eine</span> <span class="gradient-text" data-i18n="hero_hl">sicherere Event-Kultur</span><span data-i18n="hero_post">.</span>
         </h1>
         
-        <p class="text-base sm:text-lg max-w-2xl mx-auto mb-8 fade-up leading-relaxed" style="color:var(--text-secondary);animation-delay:.1s" data-i18n="hero_sub">
+        <p class="text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-6 sm:mb-8 fade-up leading-relaxed" style="color:var(--text-secondary);animation-delay:.1s" data-i18n="hero_sub">
             Anonym, vertraulich und ohne Druck. SafeSpace ist deine sichere Anlaufstelle zur Meldung von Übergriffen, Belästigung und Diskriminierung bei Veranstaltungen.
         </p>
 
         <!-- Trust Pills -->
-        <div class="flex flex-wrap justify-center gap-2.5 sm:gap-4 mb-10 text-xs font-semibold fade-up" style="animation-delay:.15s;color:var(--text-muted)">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700/40 bg-slate-800/20">
+        <div class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-7 sm:mb-9 text-[11px] sm:text-xs font-semibold fade-up" style="animation-delay:.15s;color:var(--text-muted)">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-slate-700/40 bg-slate-800/20">
                 <i class="fas fa-check text-emerald-400 text-[10px]"></i> <span data-i18n="hero_pill1">100% Anonym</span>
             </span>
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700/40 bg-slate-800/20">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-slate-700/40 bg-slate-800/20">
                 <i class="fas fa-check text-emerald-400 text-[10px]"></i> <span data-i18n="hero_pill2">Keine IP- oder Standortspeicherung</span>
             </span>
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700/40 bg-slate-800/20">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-slate-700/40 bg-slate-800/20">
                 <i class="fas fa-check text-emerald-400 text-[10px]"></i> <span data-i18n="hero_pill3">Freiwillig & ohne Zeitdruck</span>
             </span>
         </div>
 
-        <div class="flex flex-col sm:flex-row justify-center gap-4 fade-up" style="animation-delay:.2s">
-            <a href="#report" class="btn-primary px-8 py-4 rounded-2xl text-base font-bold shadow-lg">
+        <div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 fade-up" style="animation-delay:.2s">
+            <a href="#report" class="btn-primary px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base font-bold shadow-lg">
                 <i class="fas fa-shield-heart mr-2" aria-hidden="true"></i><span data-i18n="hero_cta1">Vorfall melden</span>
             </a>
-            <a href="#process" class="btn-ghost px-8 py-4 rounded-2xl text-base font-bold" data-i18n="hero_cta2">Ablauf ansehen</a>
+            <a href="#process" class="btn-ghost px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base font-bold" data-i18n="hero_cta2">Ablauf ansehen</a>
         </div>
     </div>
 

@@ -176,23 +176,44 @@ const mobileMenuBtn = document.getElementById('mobile-menu-btn');
 const mobileMenu = document.getElementById('mobile-menu');
 
 if (mobileMenuBtn && mobileMenu) {
-    mobileMenuBtn.addEventListener('click', () => {
+    mobileMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         const isOpen = mobileMenu.classList.contains('open');
-        mobileMenu.classList.toggle('open');
-        mobileMenuBtn.setAttribute('aria-expanded', !isOpen);
-        const icon = mobileMenuBtn.querySelector('i');
-        if (icon) {
-            icon.className = isOpen ? 'fas fa-bars text-lg' : 'fas fa-times text-lg';
+        if (isOpen) {
+            mobileMenu.classList.remove('open');
+            mobileMenu.classList.add('hidden');
+            mobileMenuBtn.setAttribute('aria-expanded', 'false');
+            const icon = mobileMenuBtn.querySelector('i');
+            if (icon) icon.className = 'fas fa-bars text-base';
+        } else {
+            mobileMenu.classList.add('open');
+            mobileMenu.classList.remove('hidden');
+            mobileMenuBtn.setAttribute('aria-expanded', 'true');
+            const icon = mobileMenuBtn.querySelector('i');
+            if (icon) icon.className = 'fas fa-times text-base';
         }
     });
 
     mobileMenu.querySelectorAll('a').forEach(a => {
         a.addEventListener('click', () => {
             mobileMenu.classList.remove('open');
+            mobileMenu.classList.add('hidden');
             mobileMenuBtn.setAttribute('aria-expanded', 'false');
             const icon = mobileMenuBtn.querySelector('i');
-            if (icon) icon.className = 'fas fa-bars text-lg';
+            if (icon) icon.className = 'fas fa-bars text-base';
         });
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+            if (mobileMenu.classList.contains('open')) {
+                mobileMenu.classList.remove('open');
+                mobileMenu.classList.add('hidden');
+                mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                const icon = mobileMenuBtn.querySelector('i');
+                if (icon) icon.className = 'fas fa-bars text-base';
+            }
+        }
     });
 }
 
