@@ -15,6 +15,7 @@ import secrets
 import mimetypes
 import datetime
 import urllib.parse
+import time
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 PORT = int(os.environ.get('PORT', 8080))
@@ -22,6 +23,40 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 UPLOAD_DIR = os.path.join(BASE_DIR, 'uploads')
 DB_PATH = os.path.join(DATA_DIR, 'safespace.db')
+
+# In-memory sliding-window rate limit store
+RATE_LIMIT_BUCKETS = {}
+
+def check_rate_limit(bucket_name, client_ip, max_requests, window_seconds):
+    """Sliding-window IP rate limiter. Returns True if allowed, False if exceeded."""
+    now = time.time()
+    key = (bucket_name, client_ip)
+    timestamps = RATE_LIMIT_BUCKETS.get(key, [])
+    valid = [ts for ts in timestamps if now - ts < window_seconds]
+    if len(valid) >= max_requests:
+        RATE_LIMIT_BUCKETS[key] = valid
+        return False
+    valid.append(now)
+    RATE_LIMIT_BUCKETS[key] = valid
+    return True
+
+def is_valid_image_bytes(data_bytes):
+    """Validates image magic bytes (JPEG, PNG, WebP, GIF) and size limit (<= 5MB)."""
+    if not data_bytes or len(data_bytes) > 5 * 1024 * 1024:
+        return False
+    # JPEG: \xff\xd8\xff
+    if data_bytes.startswith(b'\xff\xd8\xff'):
+        return True
+    # PNG: \x89PNG\r\n\x1a\n
+    if data_bytes.startswith(b'\x89PNG\r\n\x1a\n'):
+        return True
+    # WebP: starts with RIFF and has WEBP at bytes 8..12
+    if data_bytes.startswith(b'RIFF') and len(data_bytes) >= 12 and data_bytes[8:12] == b'WEBP':
+        return True
+    # GIF: GIF87a or GIF89a
+    if data_bytes.startswith(b'GIF87a') or data_bytes.startswith(b'GIF89a'):
+        return True
+    return False
 
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -119,7 +154,7 @@ class SafeSpaceHandler(SimpleHTTPRequestHandler):
         self.send_header('Content-Type', 'application/json; charset=utf-8')
         self.send_header('Content-Length', str(len(body)))
         self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
         self.end_headers()
         self.wfile.write(body)
@@ -127,9 +162,14 @@ class SafeSpaceHandler(SimpleHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_response(204)
         self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
         self.end_headers()
+
+    def _get_client_ip(self):
+        if hasattr(self, 'client_address') and self.client_address and isinstance(self.client_address, (list, tuple)):
+            return str(self.client_address[0])
+        return '127.0.0.1'
 
     def _get_bearer_token(self):
         auth = self.headers.get('Authorization', '')
@@ -262,6 +302,10 @@ class SafeSpaceHandler(SimpleHTTPRequestHandler):
 
         # ── API: Submit Incident Report ──
         if path == '/api/reports':
+            client_ip = self._get_client_ip()
+            if not check_rate_limit('reports', client_ip, max_requests=25, window_seconds=60):
+                return self._send_json({"error": "Zu viele Anfragen. Bitte versuche es später erneut."}, 429)
+
             data = self._read_json_body()
             category = data.get('category', '').strip()
             description = data.get('description', '').strip()
@@ -283,7 +327,15 @@ class SafeSpaceHandler(SimpleHTTPRequestHandler):
                         header, base64_data = att['dataUrl'].split(',', 1)
                         import base64
                         file_bytes = base64.b64decode(base64_data)
-                        filename = f"{report_id}_{secrets.token_hex(4)}.jpg"
+                        if not is_valid_image_bytes(file_bytes):
+                            print(f"[SECURITY] Skipped attachment for {report_id} (failed magic bytes or >5MB)")
+                            continue
+
+                        ext = 'jpg'
+                        if file_bytes.startswith(b'\x89PNG'): ext = 'png'
+                        elif file_bytes.startswith(b'RIFF'): ext = 'webp'
+
+                        filename = f"{report_id}_{secrets.token_hex(4)}.{ext}"
                         file_path = os.path.join(UPLOAD_DIR, filename)
                         with open(file_path, 'wb') as f:
                             f.write(file_bytes)
@@ -354,6 +406,10 @@ class SafeSpaceHandler(SimpleHTTPRequestHandler):
 
         # ── API: Admin Login ──
         if path == '/api/auth/login':
+            client_ip = self._get_client_ip()
+            if not check_rate_limit('login', client_ip, max_requests=15, window_seconds=60):
+                return self._send_json({"error": "Zu viele Login-Versuche. Bitte versuche es später erneut."}, 429)
+
             data = self._read_json_body()
             username = data.get('username', '').strip()
             password = data.get('password', '')
@@ -374,6 +430,38 @@ class SafeSpaceHandler(SimpleHTTPRequestHandler):
             conn.close()
 
             return self._send_json({"token": token, "username": username, "expires_at": expires})
+
+        # ── API: Admin Change Password ──
+        if path == '/api/admin/change-password':
+            user = get_authenticated_user(self._get_bearer_token())
+            if not user:
+                return self._send_json({"error": "Unauthorized"}, 401)
+
+            data = self._read_json_body()
+            old_password = data.get('old_password', '')
+            new_password = data.get('new_password', '')
+
+            if len(new_password) < 8:
+                return self._send_json({"error": "Neues Passwort muss mindestens 8 Zeichen lang sein."}, 400)
+
+            conn = sqlite3.connect(DB_PATH)
+            cursor = conn.cursor()
+            cursor.execute("SELECT password_hash, salt FROM admin_users WHERE username = ?", (user,))
+            row = cursor.fetchone()
+
+            if not row or not verify_password(row[0], row[1], old_password):
+                conn.close()
+                return self._send_json({"error": "Aktuelles Passwort ist nicht korrekt."}, 400)
+
+            new_salt = secrets.token_hex(16)
+            new_hash = hashlib.pbkdf2_hmac('sha256', new_password.encode(), new_salt.encode(), 100000).hex()
+            cursor.execute(
+                "UPDATE admin_users SET password_hash = ?, salt = ? WHERE username = ?",
+                (new_hash, new_salt, user)
+            )
+            conn.commit()
+            conn.close()
+            return self._send_json({"success": True, "message": "Passwort erfolgreich aktualisiert."})
 
         # ── API: Admin Send Message ──
         if path.startswith('/api/admin/reports/') and path.endswith('/messages'):
@@ -444,6 +532,48 @@ class SafeSpaceHandler(SimpleHTTPRequestHandler):
             return self._send_json({"success": True, "updated_at": now_iso})
 
         self.send_error(404, "Endpoint not found")
+
+    def do_DELETE(self):
+        url = urllib.parse.urlparse(self.path)
+        path = url.path.rstrip('/')
+
+        # ── API: Admin Delete Incident Report (GDPR Purge) ──
+        if path.startswith('/api/admin/reports/'):
+            user = get_authenticated_user(self._get_bearer_token())
+            if not user:
+                return self._send_json({"error": "Unauthorized"}, 401)
+
+            report_id = path.split('/')[4].upper()
+            conn = sqlite3.connect(DB_PATH)
+            cursor = conn.cursor()
+            cursor.execute("SELECT attachments_json FROM reports WHERE id = ?", (report_id,))
+            row = cursor.fetchone()
+            if not row:
+                conn.close()
+                return self._send_json({"error": "Report not found"}, 404)
+
+            # Clean up attached files on disk
+            try:
+                attachments = json.loads(row[0] or '[]')
+                for att in attachments:
+                    fname = att.get('filename')
+                    if fname:
+                        clean_fname = os.path.basename(fname)
+                        fpath = os.path.join(UPLOAD_DIR, clean_fname)
+                        if os.path.exists(fpath):
+                            os.remove(fpath)
+            except Exception as e:
+                print(f"[CLEANUP ERROR] Failed removing files for {report_id}: {e}")
+
+            cursor.execute("DELETE FROM messages WHERE report_id = ?", (report_id,))
+            cursor.execute("DELETE FROM reports WHERE id = ?", (report_id,))
+            conn.commit()
+            conn.close()
+
+            return self._send_json({"success": True, "deleted_id": report_id})
+
+        self.send_error(404, "Endpoint not found")
+
 
 
 def run():

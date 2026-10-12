@@ -163,7 +163,36 @@ def run():
     assert export_res["count"] >= 1
     print(f"  ✓ 9. GET /api/admin/export: Data export verified ({export_res['count']} records)")
 
-    print("\n🎉 ALL 9 IN-PROCESS INTEGRATION TESTS PASSED PERFECTLY!")
+    # 10. Test POST /api/admin/change-password (Password Management)
+    # Fail with incorrect old password
+    fail_data = {"old_password": "wrong_password", "new_password": "new_secret_pass_2026"}
+    status, body = invoke_request("POST", "/api/admin/change-password", fail_data, headers={"Authorization": f"Bearer {token}"})
+    assert status == 400
+    # Succeed with correct old password
+    change_data = {"old_password": "safespace2026", "new_password": "new_secret_pass_2026"}
+    status, body = invoke_request("POST", "/api/admin/change-password", change_data, headers={"Authorization": f"Bearer {token}"})
+    assert status == 200, f"Expected 200, got {status}: {body}"
+    res = json.loads(body.decode())
+    assert res["success"] is True
+    # Verify login works with new password
+    status, body = invoke_request("POST", "/api/auth/login", {"username": "admin", "password": "new_secret_pass_2026"})
+    assert status == 200
+    # Revert password back to safespace2026 for dev convenience
+    status, body = invoke_request("POST", "/api/admin/change-password", {"old_password": "new_secret_pass_2026", "new_password": "safespace2026"}, headers={"Authorization": f"Bearer {token}"})
+    assert status == 200
+    print("  ✓ 10. POST /api/admin/change-password: Password change and authentication lifecycle verified")
+
+    # 11. Test DELETE /api/admin/reports/SS-UNIT01 (GDPR Data Deletion)
+    status, body = invoke_request("DELETE", "/api/admin/reports/SS-UNIT01", headers={"Authorization": f"Bearer {token}"})
+    assert status == 200, f"Expected 200, got {status}: {body}"
+    del_res = json.loads(body.decode())
+    assert del_res["success"] is True
+    # Verify report is completely removed
+    status, body = invoke_request("GET", "/api/reports/SS-UNIT01")
+    assert status == 404
+    print("  ✓ 11. DELETE /api/admin/reports/SS-UNIT01: GDPR purge verified, report and messages deleted")
+
+    print("\n🎉 ALL 11 IN-PROCESS INTEGRATION TESTS PASSED PERFECTLY!")
 
 if __name__ == '__main__':
     run()

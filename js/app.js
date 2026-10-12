@@ -491,6 +491,9 @@ ${t.email_ftr}`;
 
             showConfirmation(result.id, cat, sev, loc);
             showToast(t.toast_submitted, 'success');
+            if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                try { navigator.vibrate([30, 40, 30]); } catch {}
+            }
             attachedFiles = [];
             renderFilePreviews();
         } catch (err) {
@@ -521,6 +524,18 @@ function showConfirmation(refId, cat, sev, loc) {
     conf.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+// Track immediately button (1-click shortcut to status & chat)
+document.getElementById('conf-track-btn')?.addEventListener('click', () => {
+    const id = document.getElementById('conf-ref-id').textContent.trim();
+    if (!id) return;
+    const statusInput = document.getElementById('status-input');
+    const statusBtn = document.getElementById('status-btn');
+    const statusSec = document.getElementById('status');
+    if (statusInput) statusInput.value = id;
+    if (statusSec) statusSec.scrollIntoView({ behavior: 'smooth' });
+    if (statusBtn) setTimeout(() => statusBtn.click(), 450);
+});
+
 // Copy ID button
 document.getElementById('copy-id-btn')?.addEventListener('click', () => {
     const id = document.getElementById('conf-ref-id').textContent;
@@ -548,6 +563,7 @@ document.getElementById('copy-email-btn')?.addEventListener('click', () => {
 
 // New report button
 document.getElementById('new-report-btn')?.addEventListener('click', () => {
+    stopChatPolling();
     document.getElementById('confirmation-screen').classList.add('hidden');
     document.getElementById('form-card').style.display = '';
     const rateInfo = document.getElementById('rate-info');
@@ -559,10 +575,56 @@ document.getElementById('new-report-btn')?.addEventListener('click', () => {
     document.getElementById('report').scrollIntoView({ behavior: 'smooth' });
 });
 
+
 // ── STATUS CHECK & ANONYMOUS CHAT ─────────────────────────────────────────────
 const statusBtn = document.getElementById('status-btn');
 const statusInput = document.getElementById('status-input');
 let currentLookupId = null;
+let chatPollingTimer = null;
+let lastKnownMessageCount = 0;
+
+function startChatPolling(id) {
+    stopChatPolling();
+    chatPollingTimer = setInterval(async () => {
+        if (!currentLookupId || currentLookupId !== id) return;
+        try {
+            const res = await ApiClient.getReportStatus(id);
+            if (res.found && res.report) {
+                const msgs = res.messages || [];
+                if (msgs.length > lastKnownMessageCount) {
+                    lastKnownMessageCount = msgs.length;
+                    renderFollowUpMessages(msgs);
+                    showToast('Neue Antwort vom Awareness-Team eingetroffen!', 'info');
+                }
+                const r = res.report;
+                const t = T[currentLang] || T.de;
+                const statusMap = {
+                    received: { text: t.status_received, cls: 'badge-received' },
+                    review:   { text: t.status_review,   cls: 'badge-review' },
+                    action:   { text: t.status_action || 'Maßnahme ergriffen', cls: 'badge-action' },
+                    resolved: { text: t.status_resolved, cls: 'badge-resolved' }
+                };
+                const badge = statusMap[r.status] || { text: r.status, cls: 'badge-received' };
+                const badgeEl = document.getElementById('status-badge-el');
+                if (badgeEl) {
+                    badgeEl.textContent = badge.text;
+                    badgeEl.className = `badge ${badge.cls}`;
+                }
+                const noteEl = document.getElementById('st-note');
+                if (noteEl) noteEl.textContent = r.public_notes || t.stat_note_team;
+            }
+        } catch (e) {
+            console.debug('Chat polling notice:', e);
+        }
+    }, 15000);
+}
+
+function stopChatPolling() {
+    if (chatPollingTimer) {
+        clearInterval(chatPollingTimer);
+        chatPollingTimer = null;
+    }
+}
 
 if (statusBtn && statusInput) {
     statusBtn.addEventListener('click', async () => {
@@ -604,8 +666,12 @@ if (statusBtn && statusInput) {
                 document.getElementById('st-time').textContent = dateVal ? new Date(dateVal).toLocaleString() : '-';
                 document.getElementById('st-note').textContent = r.public_notes || t.stat_note_team;
 
-                renderFollowUpMessages(res.messages || []);
+                const msgs = res.messages || [];
+                lastKnownMessageCount = msgs.length;
+                renderFollowUpMessages(msgs);
+                startChatPolling(id);
             } else {
+                stopChatPolling();
                 foundEl.classList.add('hidden');
                 notFoundEl.classList.remove('hidden');
             }
@@ -621,6 +687,7 @@ if (statusBtn && statusInput) {
         if (e.key === 'Enter') statusBtn.click();
     });
 }
+
 
 function renderFollowUpMessages(messages) {
     const thread = document.getElementById('user-chat-thread');
@@ -663,7 +730,10 @@ document.getElementById('user-chat-form')?.addEventListener('submit', async (e) 
         showToast('Nachricht gesendet!', 'success');
         // Refresh messages
         const res = await ApiClient.getReportStatus(currentLookupId);
-        if (res.found) renderFollowUpMessages(res.messages || []);
+        if (res.found) {
+            lastKnownMessageCount = (res.messages || []).length;
+            renderFollowUpMessages(res.messages || []);
+        }
     } catch {
         showToast('Nachricht konnte nicht übermittelt werden.', 'error');
     }

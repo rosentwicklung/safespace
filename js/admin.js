@@ -102,28 +102,45 @@ document.getElementById('logout-btn')?.addEventListener('click', logout);
 
 // ── REPORTS MANAGEMENT ────────────────────────────────────────────────────────
 async function loadReports() {
-    const status = document.getElementById('filter-status').value;
-    const search = document.getElementById('filter-search').value.trim();
-
-    const params = new URLSearchParams();
-    if (status) params.append('status', status);
-    if (search) params.append('search', search);
-
     try {
-        const res = await fetch(`/api/admin/reports?${params.toString()}`, {
+        const res = await fetch('/api/admin/reports', {
             headers: { 'Authorization': `Bearer ${currentToken}` }
         });
 
         if (res.ok) {
             const data = await res.json();
             currentReports = data.reports || [];
-            renderTable(currentReports);
             updateStats(currentReports);
+            applyFiltersAndRender();
         } else if (res.status === 401) {
             logout();
         }
     } catch (err) {
         showToast('Fehler beim Laden der Vorfälle.', 'error');
+    }
+}
+
+function applyFiltersAndRender() {
+    const status = document.getElementById('filter-status')?.value || '';
+    const cat = document.getElementById('filter-category')?.value || '';
+    const sev = document.getElementById('filter-severity')?.value || '';
+    const search = (document.getElementById('filter-search')?.value || '').trim().toLowerCase();
+
+    const filtered = currentReports.filter(r => {
+        if (status && r.status !== status) return false;
+        if (cat && r.category !== cat) return false;
+        if (sev && !(r.severity || '').includes(sev)) return false;
+        if (search) {
+            const text = `${r.id} ${r.category} ${r.location || ''} ${r.description || ''} ${r.public_notes || ''}`.toLowerCase();
+            if (!text.includes(search)) return false;
+        }
+        return true;
+    });
+
+    renderTable(filtered);
+    const counterEl = document.getElementById('reports-counter');
+    if (counterEl) {
+        counterEl.textContent = `${filtered.length} von ${currentReports.length}`;
     }
 }
 
@@ -354,15 +371,100 @@ window.addEventListener('keydown', (e) => {
 });
 
 // Filters & Refresh
-document.getElementById('filter-status')?.addEventListener('change', loadReports);
-document.getElementById('filter-search')?.addEventListener('input', () => {
-    clearTimeout(window._searchTimer);
-    window._searchTimer = setTimeout(loadReports, 300);
-});
+document.getElementById('filter-status')?.addEventListener('change', applyFiltersAndRender);
+document.getElementById('filter-category')?.addEventListener('change', applyFiltersAndRender);
+document.getElementById('filter-severity')?.addEventListener('change', applyFiltersAndRender);
+document.getElementById('filter-search')?.addEventListener('input', applyFiltersAndRender);
 document.getElementById('refresh-btn')?.addEventListener('click', () => {
     loadReports();
     showToast('Daten aktualisiert.', 'info');
 });
+
+// Delete report (GDPR Purge)
+document.getElementById('delete-report-btn')?.addEventListener('click', async () => {
+    if (!activeReportId) return;
+    const confirmed = window.confirm(`Möchtest du den Vorfall "${activeReportId}" und alle zugehörigen Daten unwiderruflich aus der Datenbank und vom Server löschen?`);
+    if (!confirmed) return;
+
+    try {
+        const res = await fetch(`/api/admin/reports/${encodeURIComponent(activeReportId)}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${currentToken}` }
+        });
+
+        if (res.ok) {
+            showToast(`Vorfall ${activeReportId} erfolgreich gelöscht.`, 'success');
+            document.getElementById('detail-modal').classList.remove('open');
+            activeReportId = null;
+            loadReports();
+        } else {
+            const err = await res.json().catch(() => ({}));
+            showToast(err.error || 'Löschen fehlgeschlagen.', 'error');
+        }
+    } catch {
+        showToast('Netzwerkfehler beim Löschen.', 'error');
+    }
+});
+
+// Password Change Modal
+const passwordModal = document.getElementById('password-modal');
+const openPassBtn = document.getElementById('open-password-btn');
+const closePassBtn = document.getElementById('close-password-btn');
+const cancelPassBtn = document.getElementById('cancel-password-btn');
+const changePassForm = document.getElementById('change-password-form');
+
+if (openPassBtn && passwordModal) {
+    openPassBtn.addEventListener('click', () => {
+        changePassForm?.reset();
+        passwordModal.classList.add('open');
+    });
+}
+
+function closePasswordModal() {
+    passwordModal?.classList.remove('open');
+    changePassForm?.reset();
+}
+
+closePassBtn?.addEventListener('click', closePasswordModal);
+cancelPassBtn?.addEventListener('click', closePasswordModal);
+
+changePassForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const old_password = document.getElementById('old-pass').value;
+    const new_password = document.getElementById('new-pass').value;
+    const confirm_password = document.getElementById('confirm-pass').value;
+
+    if (new_password.length < 8) {
+        showToast('Das neue Passwort muss mindestens 8 Zeichen lang sein.', 'error');
+        return;
+    }
+    if (new_password !== confirm_password) {
+        showToast('Die neuen Passwörter stimmen nicht überein.', 'error');
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/admin/change-password', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${currentToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ old_password, new_password })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+            showToast(data.message || 'Passwort erfolgreich geändert!', 'success');
+            closePasswordModal();
+        } else {
+            showToast(data.error || 'Passwortänderung fehlgeschlagen.', 'error');
+        }
+    } catch {
+        showToast('Verbindungsfehler beim Ändern des Passworts.', 'error');
+    }
+});
+
 
 // ── EXPORT CSV & JSON ─────────────────────────────────────────────────────────
 document.getElementById('export-csv-btn')?.addEventListener('click', async () => {

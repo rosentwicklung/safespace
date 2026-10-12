@@ -30,10 +30,13 @@
                 <button id="theme-toggle-btn" class="theme-toggle-btn" title="Design umschalten (Hell/Dunkel)" aria-label="Design umschalten">
                     <i class="fas fa-sun text-sm" id="theme-icon"></i>
                 </button>
-                <div id="user-badge" class="hidden flex items-center gap-3">
-                    <span class="text-xs text-slate-400 font-mono" id="username-display">admin</span>
-                    <button id="logout-btn" class="btn-ghost px-3 py-1.5 rounded-lg text-xs text-red-400 hover:text-red-300">
-                        <i class="fas fa-sign-out-alt"></i> Abmelden
+                <div id="user-badge" class="hidden flex items-center gap-2 sm:gap-3">
+                    <span class="text-xs text-slate-400 font-mono hidden sm:inline" id="username-display">admin</span>
+                    <button id="open-password-btn" class="btn-ghost px-2.5 py-1.5 rounded-lg text-xs flex items-center gap-1.5 text-slate-300 hover:text-white" title="Passwort ändern">
+                        <i class="fas fa-key text-xs"></i> <span class="hidden sm:inline">Passwort</span>
+                    </button>
+                    <button id="logout-btn" class="btn-ghost px-2.5 py-1.5 rounded-lg text-xs text-red-400 hover:text-red-300">
+                        <i class="fas fa-sign-out-alt"></i> <span class="hidden sm:inline">Abmelden</span>
                     </button>
                 </div>
             </div>
@@ -101,7 +104,7 @@
         <!-- Filters & Actions -->
         <div class="card p-5 flex flex-wrap gap-4 items-center justify-between">
             <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[280px]">
-                <div class="relative flex-1 min-w-[200px]">
+                <div class="relative flex-1 min-w-[180px]">
                     <i class="fas fa-search absolute left-3.5 top-3.5 text-xs text-slate-500"></i>
                     <input type="text" id="filter-search" class="w-full pl-9 pr-4 py-2.5 rounded-xl text-xs" placeholder="Nach ID, Ort oder Inhalt filtern...">
                 </div>
@@ -112,9 +115,25 @@
                     <option value="action">Maßnahme ergriffen</option>
                     <option value="resolved">Abgeschlossen</option>
                 </select>
+                <select id="filter-category" class="px-3 py-2.5 rounded-xl text-xs">
+                    <option value="">Alle Kategorien</option>
+                    <option value="Belästigung">Belästigung</option>
+                    <option value="Diskriminierung">Diskriminierung</option>
+                    <option value="Physische Gewalt">Physische Gewalt</option>
+                    <option value="Unwohlsein">Unwohlsein</option>
+                    <option value="Sonstiges">Sonstiges</option>
+                </select>
+                <select id="filter-severity" class="px-3 py-2.5 rounded-xl text-xs">
+                    <option value="">Alle Schweregrade</option>
+                    <option value="Niedrig">Niedrig (Keine akute Gefahr)</option>
+                    <option value="Mittel">Mittel (Unangenehm / Grenzen verletzt)</option>
+                    <option value="Hoch">Hoch (Ernsthafte Bedrohung)</option>
+                    <option value="Akut">Akut (Sofortige Intervention)</option>
+                </select>
                 <button id="refresh-btn" class="btn-ghost px-3 py-2 rounded-xl text-xs flex items-center gap-1.5" title="Neu laden">
                     <i class="fas fa-sync-alt"></i> Aktualisieren
                 </button>
+                <span id="reports-counter" class="text-xs text-slate-400 font-mono ml-auto"></span>
             </div>
             <div class="flex items-center gap-2">
                 <button id="export-csv-btn" class="btn-ghost px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5">
@@ -251,6 +270,53 @@
                 </form>
             </div>
 
+            <!-- GDPR & Dangerous Actions -->
+            <div class="border-t border-slate-800 pt-5 flex flex-wrap justify-between items-center gap-3">
+                <div class="text-xs text-slate-500 flex items-center gap-1.5">
+                    <i class="fas fa-shield-alt text-slate-400"></i>
+                    <span>DSGVO-Datenbereinigung & Revisionssicherheit</span>
+                </div>
+                <button type="button" id="delete-report-btn" class="btn-ghost px-4 py-2.5 rounded-xl text-xs font-bold text-rose-400 hover:text-rose-300 hover:border-rose-400 flex items-center gap-2">
+                    <i class="fas fa-trash-alt"></i> Vorfall unwiderruflich löschen
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ── PASSWORD CHANGE MODAL ─────────────────────────────────────────── -->
+    <div id="password-modal" class="modal-overlay">
+        <div class="card max-w-md w-full p-6 space-y-5 shadow-2xl relative">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2 font-bold text-base text-white">
+                    <i class="fas fa-key text-blue-400"></i>
+                    <span>Admin-Passwort ändern</span>
+                </div>
+                <button id="close-password-btn" class="btn-ghost w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="change-password-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1" for="old-pass">Aktuelles Passwort</label>
+                    <input type="password" id="old-pass" class="w-full px-4 py-2.5 rounded-xl text-sm" placeholder="••••••••••••" required autocomplete="current-password">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1" for="new-pass">Neues Passwort (mind. 8 Zeichen)</label>
+                    <input type="password" id="new-pass" class="w-full px-4 py-2.5 rounded-xl text-sm" minlength="8" placeholder="••••••••••••" required autocomplete="new-password">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1" for="confirm-pass">Neues Passwort bestätigen</label>
+                    <input type="password" id="confirm-pass" class="w-full px-4 py-2.5 rounded-xl text-sm" minlength="8" placeholder="••••••••••••" required autocomplete="new-password">
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" id="cancel-password-btn" class="btn-ghost px-4 py-2 rounded-xl text-xs font-medium">Abbrechen</button>
+                    <button type="submit" class="btn-primary px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2">
+                        <i class="fas fa-check"></i> Passwort speichern
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 

@@ -16,3 +16,17 @@
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Redirects & Rewrites
+[[redirects]]
+  from = "/admin"
+  to = "/admin/index.html"
+  status = 200
+
+# Optional backend proxy: To connect Netlify to a self-hosted or cloud backend (e.g. Render / Fly.io),
+# uncomment the block below with your deployed backend server address:
+# [[redirects]]
+#   from = "/api/*"
+#   to = "https://api.safespace-bremen.de/api/:splat"
+#   status = 200
+#   force = true
