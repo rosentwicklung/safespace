@@ -31,46 +31,65 @@
         <div class="flex justify-between h-16 items-center">
             
             <!-- Brand Logo & Protective Emblem -->
-            <a href="#" class="flex items-center gap-2.5 group focus:outline-none" aria-label="SafeSpace Startseite">
+            <a href="#" class="flex items-center gap-2.5 group focus:outline-none flex-shrink-0" aria-label="SafeSpace Startseite">
                 <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105" style="background:var(--teal-subtle)">
                     <i class="fas fa-shield-heart text-lg" style="color:var(--teal)"></i>
                 </div>
-                <span class="text-lg font-extrabold tracking-tight">Safe<span style="color:var(--teal)">Space</span></span>
+                <span class="text-base sm:text-lg font-extrabold tracking-tight">Safe<span style="color:var(--teal)">Space</span></span>
             </a>
 
             <!-- Desktop Links -->
-            <div class="hidden lg:flex gap-7 text-sm font-medium items-center">
-                <a href="#about" class="hover:text-teal-400 transition-colors" data-i18n="nav_about">Über uns</a>
-                <a href="#report" class="hover:text-teal-400 transition-colors" data-i18n="nav_report">Vorfall melden</a>
-                <a href="#process" class="hover:text-teal-400 transition-colors" data-i18n="nav_process">Ablauf</a>
-                <a href="#help" class="hover:text-teal-400 transition-colors" data-i18n="nav_help">Hilfe & Kontakt</a>
-                <a href="#glossary" class="hover:text-teal-400 transition-colors" data-i18n="nav_glossary">Glossar</a>
-                <a href="#status" class="hover:text-teal-400 transition-colors" data-i18n="nav_status">Status prüfen</a>
-                <a href="admin/" class="text-xs text-slate-400 hover:text-violet-400 flex items-center gap-1 transition-colors" title="Awareness-Team Login">
-                    <i class="fas fa-user-shield text-violet-400"></i> <span data-i18n="nav_admin">Team-Login</span>
+            <div class="hidden lg:flex gap-4 xl:gap-6 text-xs xl:text-sm font-medium items-center">
+                <a href="#about" class="flex items-center gap-1.5 hover:text-teal-400 transition-colors">
+                    <i class="fas fa-circle-info text-xs opacity-70"></i>
+                    <span data-i18n="nav_about">Über uns</span>
+                </a>
+                <a href="#report" class="flex items-center gap-1.5 hover:text-teal-400 transition-colors">
+                    <i class="fas fa-bullhorn text-xs opacity-70"></i>
+                    <span data-i18n="nav_report">Melden</span>
+                </a>
+                <a href="#process" class="flex items-center gap-1.5 hover:text-teal-400 transition-colors">
+                    <i class="fas fa-list-check text-xs opacity-70"></i>
+                    <span data-i18n="nav_process">Ablauf</span>
+                </a>
+                <a href="#help" class="flex items-center gap-1.5 hover:text-teal-400 transition-colors">
+                    <i class="fas fa-hand-holding-heart text-xs opacity-70"></i>
+                    <span data-i18n="nav_help">Hilfe</span>
+                </a>
+                <a href="#glossary" class="flex items-center gap-1.5 hover:text-teal-400 transition-colors">
+                    <i class="fas fa-book-open text-xs opacity-70"></i>
+                    <span data-i18n="nav_glossary">Glossar</span>
+                </a>
+                <a href="#status" class="flex items-center gap-1.5 hover:text-teal-400 transition-colors">
+                    <i class="fas fa-magnifying-glass text-xs opacity-70"></i>
+                    <span data-i18n="nav_status">Status</span>
+                </a>
+                <a href="admin/" class="flex items-center gap-1.5 text-xs text-slate-400 hover:text-violet-400 transition-colors" title="Awareness-Team Login">
+                    <i class="fas fa-user-shield text-violet-400"></i>
+                    <span data-i18n="nav_admin">Team</span>
                 </a>
             </div>
 
             <!-- Controls: Quick Exit, Theme Toggle, Lang Switcher, CTA, Mobile Toggle -->
-            <div class="flex items-center gap-2.5 sm:gap-3">
+            <div class="flex items-center gap-2 sm:gap-2.5">
                 
-                <!-- Quick Exit Panic Button (Safety feature) -->
-                <button id="quick-exit-btn" class="btn-quick-exit" title="Verlässt diese Seite sofort (Tastatur: 2x Esc)" aria-label="Seite sofort verlassen">
-                    <i class="fas fa-person-running"></i>
-                    <span data-i18n="quick_exit">Schnell verlassen</span>
+                <!-- Quick Exit Panic Button (Icon-only on mobile, compact on tablet/desktop) -->
+                <button id="quick-exit-btn" class="btn-quick-exit" title="Notfall-Exit (Tastatur: 2x Esc)" aria-label="Notfall-Exit (2x Esc)">
+                    <i class="fas fa-person-running text-sm" aria-hidden="true"></i>
+                    <span class="hidden sm:inline font-bold text-xs" data-i18n="quick_exit">Exit</span>
                 </button>
 
                 <!-- Theme Switcher (Dark / Light) -->
                 <button id="theme-toggle-btn" class="theme-toggle-btn" title="Design umschalten (Hell/Dunkel)" aria-label="Design umschalten">
-                    <i class="fas fa-sun text-sm" id="theme-icon"></i>
+                    <i class="fas fa-sun text-sm" id="theme-icon" aria-hidden="true"></i>
                 </button>
 
                 <!-- Language Selector -->
                 <div class="lang-switcher">
                     <button class="lang-btn" id="lang-btn" aria-haspopup="true" aria-expanded="false" aria-label="Sprache auswählen">
                         <span id="cur-flag">🇩🇪</span>
-                        <span id="cur-code" class="font-mono text-xs">DE</span>
-                        <i class="fas fa-chevron-down text-xs opacity-50 ml-0.5"></i>
+                        <span id="cur-code" class="hidden sm:inline font-mono text-xs">DE</span>
+                        <i class="fas fa-chevron-down text-[10px] opacity-50 ml-0.5" aria-hidden="true"></i>
                     </button>
                     <div class="lang-dropdown" id="lang-dd" role="menu">
                         <div class="lang-opt" data-lang="de" role="menuitem"><span>🇩🇪</span> Deutsch</div>
@@ -83,11 +102,14 @@
                     </div>
                 </div>
 
-                <a href="#report" class="hidden sm:inline-flex btn-primary px-5 py-2 rounded-full text-sm" data-i18n="nav_cta">Jetzt Melden</a>
+                <a href="#report" class="hidden lg:inline-flex btn-primary px-3.5 py-1.5 rounded-full text-xs font-bold items-center gap-1.5 shadow-sm">
+                    <i class="fas fa-bullhorn text-[11px]" aria-hidden="true"></i>
+                    <span data-i18n="nav_cta">Melden</span>
+                </a>
 
                 <!-- Mobile Hamburger Button -->
-                <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-xl text-slate-400 hover:text-white focus:outline-none" aria-label="Navigation umschalten" aria-expanded="false" aria-controls="mobile-menu">
-                    <i class="fas fa-bars text-lg"></i>
+                <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-xl text-slate-400 hover:text-white focus:outline-none flex items-center justify-center w-9 h-9" aria-label="Navigation umschalten" aria-expanded="false" aria-controls="mobile-menu">
+                    <i class="fas fa-bars text-base" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
@@ -96,16 +118,38 @@
     <!-- Mobile Drawer Menu -->
     <div id="mobile-menu" class="lg:hidden glass-nav border-t border-slate-800 px-6 py-5 space-y-4 shadow-2xl">
         <div class="flex flex-col gap-3 text-sm font-medium">
-            <a href="#about" class="text-slate-300 hover:text-white py-1" data-i18n="nav_about">Über uns</a>
-            <a href="#report" class="text-slate-300 hover:text-white py-1" data-i18n="nav_report">Vorfall melden</a>
-            <a href="#process" class="text-slate-300 hover:text-white py-1" data-i18n="nav_process">Ablauf</a>
-            <a href="#help" class="text-slate-300 hover:text-white py-1" data-i18n="nav_help">Hilfe & Kontakt</a>
-            <a href="#glossary" class="text-slate-300 hover:text-white py-1" data-i18n="nav_glossary">Glossar</a>
-            <a href="#status" class="text-slate-300 hover:text-white py-1" data-i18n="nav_status">Status prüfen</a>
-            <a href="admin/" class="text-xs text-violet-400 py-1 flex items-center gap-1.5">
-                <i class="fas fa-user-shield"></i> <span data-i18n="nav_admin">Team-Login</span>
+            <a href="#about" class="flex items-center gap-2.5 text-slate-300 hover:text-white py-1">
+                <i class="fas fa-circle-info w-4 text-center text-teal-400" aria-hidden="true"></i>
+                <span data-i18n="nav_about">Über uns</span>
             </a>
-            <a href="#report" class="btn-primary w-full py-2.5 rounded-xl text-center text-sm font-bold mt-2" data-i18n="nav_cta">Jetzt Melden</a>
+            <a href="#report" class="flex items-center gap-2.5 text-slate-300 hover:text-white py-1">
+                <i class="fas fa-bullhorn w-4 text-center text-teal-400" aria-hidden="true"></i>
+                <span data-i18n="nav_report">Melden</span>
+            </a>
+            <a href="#process" class="flex items-center gap-2.5 text-slate-300 hover:text-white py-1">
+                <i class="fas fa-list-check w-4 text-center text-teal-400" aria-hidden="true"></i>
+                <span data-i18n="nav_process">Ablauf</span>
+            </a>
+            <a href="#help" class="flex items-center gap-2.5 text-slate-300 hover:text-white py-1">
+                <i class="fas fa-hand-holding-heart w-4 text-center text-teal-400" aria-hidden="true"></i>
+                <span data-i18n="nav_help">Hilfe</span>
+            </a>
+            <a href="#glossary" class="flex items-center gap-2.5 text-slate-300 hover:text-white py-1">
+                <i class="fas fa-book-open w-4 text-center text-teal-400" aria-hidden="true"></i>
+                <span data-i18n="nav_glossary">Glossar</span>
+            </a>
+            <a href="#status" class="flex items-center gap-2.5 text-slate-300 hover:text-white py-1">
+                <i class="fas fa-magnifying-glass w-4 text-center text-teal-400" aria-hidden="true"></i>
+                <span data-i18n="nav_status">Status</span>
+            </a>
+            <a href="admin/" class="flex items-center gap-2.5 text-xs text-violet-400 py-1">
+                <i class="fas fa-user-shield w-4 text-center" aria-hidden="true"></i>
+                <span data-i18n="nav_admin">Team</span>
+            </a>
+            <a href="#report" class="btn-primary w-full py-2.5 rounded-xl text-center text-sm font-bold mt-2 flex items-center justify-center gap-2">
+                <i class="fas fa-bullhorn text-xs" aria-hidden="true"></i>
+                <span data-i18n="nav_cta">Melden</span>
+            </a>
         </div>
     </div>
 </nav>
@@ -293,28 +337,28 @@
                     <div class="severity-card-group" id="severity-cards" role="radiogroup" aria-label="Schweregrad auswählen">
                         <div class="severity-card sev-1 active" data-sev="😟 Unangenehm" role="radio" aria-checked="true" tabindex="0">
                             <div class="text-xl mb-1">😟</div>
-                            <div class="text-xs font-bold" data-i18n="sev1">😟 Belastend</div>
+                            <div class="text-xs font-bold" data-i18n="sev1">Belastend</div>
                             <div class="text-[10px] mt-0.5" style="color:var(--text-muted)">Unangenehm / Grenzen überschritten</div>
                         </div>
 
                         <div class="severity-card sev-2" data-sev="⚠️ Ernsthaft" role="radio" aria-checked="false" tabindex="0">
                             <div class="text-xl mb-1">⚠️</div>
-                            <div class="text-xs font-bold" data-i18n="sev2">⚠️ Ernsthaft</div>
+                            <div class="text-xs font-bold" data-i18n="sev2">Ernsthaft</div>
                             <div class="text-[10px] mt-0.5" style="color:var(--text-muted)">Bedrohlich / Körperlich / Diskriminierend</div>
                         </div>
 
                         <div class="severity-card sev-3" data-sev="🚨 Notfall" role="radio" aria-checked="false" tabindex="0">
                             <div class="text-xl mb-1">🚨</div>
-                            <div class="text-xs font-bold" data-i18n="sev3">🚨 Akuter Notfall</div>
+                            <div class="text-xs font-bold" data-i18n="sev3">Akuter Notfall</div>
                             <div class="text-[10px] mt-0.5" style="color:var(--text-muted)">Akute Gefahr oder schwere Gewalt</div>
                         </div>
                     </div>
 
                     <!-- Hidden Synced Select -->
                     <select id="f-sev" class="sr-only" aria-hidden="true" tabindex="-1">
-                        <option value="😟 Unangenehm" data-i18n="sev1">😟 Belastend</option>
-                        <option value="⚠️ Ernsthaft" data-i18n="sev2">⚠️ Ernsthaft</option>
-                        <option value="🚨 Notfall" data-i18n="sev3">🚨 Akuter Notfall</option>
+                        <option value="😟 Unangenehm" data-i18n="sev1">Belastend</option>
+                        <option value="⚠️ Ernsthaft" data-i18n="sev2">Ernsthaft</option>
+                        <option value="🚨 Notfall" data-i18n="sev3">Akuter Notfall</option>
                     </select>
                 </div>
 
