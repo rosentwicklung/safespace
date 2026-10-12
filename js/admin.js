@@ -422,5 +422,39 @@ document.getElementById('export-json-btn')?.addEventListener('click', async () =
     }
 });
 
+// ── THEME SUPPORT ─────────────────────────────────────────────────────────────
+const THEME_STORAGE_KEY = 'ss_theme';
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const themeIcon = document.getElementById('theme-icon');
+    if (themeIcon) {
+        if (theme === 'light') {
+            themeIcon.className = 'fas fa-moon text-sm';
+        } else {
+            themeIcon.className = 'fas fa-sun text-sm';
+        }
+    }
+}
+
+function initTheme() {
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    const initialTheme = savedTheme || (prefersLight ? 'light' : 'dark');
+    applyTheme(initialTheme);
+
+    const toggleBtn = document.getElementById('theme-toggle-btn');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+            localStorage.setItem(THEME_STORAGE_KEY, next);
+            showToast(next === 'light' ? 'Helles Design aktiviert' : 'Dunkles Design aktiviert', 'info');
+        });
+    }
+}
+
 // Init
+initTheme();
 checkAuth();

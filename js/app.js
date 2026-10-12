@@ -1,5 +1,6 @@
 /**
  * SafeSpace Main Application Controller
+ * Safe Haven Design & Trauma-Informed Interactive Logic
  */
 
 import { T } from './i18n.js';
@@ -10,6 +11,7 @@ import { Sanitizer } from './sanitize.js';
 let currentLang = 'de';
 let attachedFiles = []; // Array of sanitized attachments { blob, dataUrl, name, size }
 const MAX_FILES = 3;
+const THEME_STORAGE_KEY = 'ss_theme';
 
 // ── TOAST NOTIFICATIONS ───────────────────────────────────────────────────────
 export function showToast(message, type = 'info') {
@@ -34,6 +36,74 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js').catch(err => {
             console.debug('Service Worker Registration notice:', err);
         });
+    });
+}
+
+// ── THEME MANAGER (DARK / LIGHT MODE) ─────────────────────────────────────────
+function initTheme() {
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    const initialTheme = savedTheme || (prefersLight ? 'light' : 'dark');
+    applyTheme(initialTheme);
+
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+            localStorage.setItem(THEME_STORAGE_KEY, next);
+            showToast(next === 'light' ? 'Helles Design aktiviert' : 'Dunkles Design aktiviert', 'info');
+        });
+    }
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const themeIcon = document.getElementById('theme-icon');
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+
+    if (themeIcon) {
+        if (theme === 'light') {
+            themeIcon.className = 'fas fa-moon text-sm';
+        } else {
+            themeIcon.className = 'fas fa-sun text-sm';
+        }
+    }
+
+    if (themeColorMeta) {
+        themeColorMeta.setAttribute('content', theme === 'light' ? '#f8faf9' : '#0a0f1d');
+    }
+}
+
+// ── QUICK EXIT EMERGENCY SAFETY FEATURE ───────────────────────────────────────
+function initQuickExit() {
+    const quickExitBtn = document.getElementById('quick-exit-btn');
+    const emergencyRedirect = () => {
+        // Clear any sensitive unsubmitted inputs
+        const msgEl = document.getElementById('f-msg');
+        if (msgEl) msgEl.value = '';
+        // Replace page in history immediately
+        window.location.replace('https://www.google.de');
+    };
+
+    if (quickExitBtn) {
+        quickExitBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            emergencyRedirect();
+        });
+    }
+
+    // Double-Esc key triggers Quick Exit immediately
+    let lastEscTime = 0;
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const now = Date.now();
+            if (now - lastEscTime < 750) {
+                emergencyRedirect();
+            }
+            lastEscTime = now;
+        }
     });
 }
 
@@ -62,6 +132,15 @@ export function applyLang(lang) {
         const key = el.dataset.i18nPh;
         if (t[key] !== undefined) {
             el.placeholder = t[key];
+        }
+    });
+
+    // Update titles / tooltips
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.dataset.i18nTitle;
+        if (t[key] !== undefined) {
+            el.setAttribute('title', t[key]);
+            el.setAttribute('aria-label', t[key]);
         }
     });
 
@@ -103,7 +182,7 @@ if (mobileMenuBtn && mobileMenu) {
         mobileMenuBtn.setAttribute('aria-expanded', !isOpen);
         const icon = mobileMenuBtn.querySelector('i');
         if (icon) {
-            icon.className = isOpen ? 'fas fa-bars text-xl' : 'fas fa-times text-xl';
+            icon.className = isOpen ? 'fas fa-bars text-lg' : 'fas fa-times text-lg';
         }
     });
 
@@ -112,9 +191,76 @@ if (mobileMenuBtn && mobileMenu) {
             mobileMenu.classList.remove('open');
             mobileMenuBtn.setAttribute('aria-expanded', 'false');
             const icon = mobileMenuBtn.querySelector('i');
-            if (icon) icon.className = 'fas fa-bars text-xl';
+            if (icon) icon.className = 'fas fa-bars text-lg';
         });
     });
+}
+
+// ── INTERACTIVE CATEGORY PILLS & SEVERITY CARDS ───────────────────────────────
+function initChoicePills() {
+    const categoryPills = document.querySelectorAll('#category-pills .choice-pill');
+    const fCat = document.getElementById('f-cat');
+
+    categoryPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            categoryPills.forEach(p => {
+                p.classList.remove('active');
+                p.setAttribute('aria-checked', 'false');
+            });
+            pill.classList.add('active');
+            pill.setAttribute('aria-checked', 'true');
+            if (fCat) {
+                fCat.value = pill.dataset.cat;
+            }
+        });
+    });
+
+    const severityCards = document.querySelectorAll('#severity-cards .severity-card');
+    const fSev = document.getElementById('f-sev');
+
+    severityCards.forEach(card => {
+        const selectCard = () => {
+            severityCards.forEach(c => {
+                c.classList.remove('active');
+                c.setAttribute('aria-checked', 'false');
+            });
+            card.classList.add('active');
+            card.setAttribute('aria-checked', 'true');
+            if (fSev) {
+                fSev.value = card.dataset.sev;
+            }
+        };
+
+        card.addEventListener('click', selectCard);
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                selectCard();
+            }
+        });
+    });
+}
+
+function resetChoicePills() {
+    const categoryPills = document.querySelectorAll('#category-pills .choice-pill');
+    const fCat = document.getElementById('f-cat');
+    if (categoryPills.length) {
+        categoryPills.forEach((p, i) => {
+            p.classList.toggle('active', i === 0);
+            p.setAttribute('aria-checked', i === 0 ? 'true' : 'false');
+        });
+        if (fCat) fCat.value = categoryPills[0].dataset.cat;
+    }
+
+    const severityCards = document.querySelectorAll('#severity-cards .severity-card');
+    const fSev = document.getElementById('f-sev');
+    if (severityCards.length) {
+        severityCards.forEach((c, i) => {
+            c.classList.toggle('active', i === 0);
+            c.setAttribute('aria-checked', i === 0 ? 'true' : 'false');
+        });
+        if (fSev) fSev.value = severityCards[0].dataset.sev;
+    }
 }
 
 // ── GLOSSARY ──────────────────────────────────────────────────────────────────
@@ -128,11 +274,11 @@ function buildGlossary(lang) {
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <span class="gloss-tag">${Sanitizer.escapeHtml(item.tag)}</span>
-                    <span class="font-bold text-white">${Sanitizer.escapeHtml(item.term)}</span>
+                    <span class="font-bold" style="color:var(--text-primary)">${Sanitizer.escapeHtml(item.term)}</span>
                 </div>
-                <i class="fas fa-chevron-down text-slate-500 text-sm transition-transform" id="gloss-chevron-${index}"></i>
+                <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)" id="gloss-chevron-${index}"></i>
             </div>
-            <div class="gloss-body mt-3 text-sm text-slate-300 leading-relaxed" id="gloss-body-${index}">
+            <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)" id="gloss-body-${index}">
                 ${Sanitizer.escapeHtml(item.def)}
             </div>
         </div>
@@ -192,7 +338,7 @@ if (msgInput && charCount) {
     msgInput.addEventListener('input', () => {
         const len = msgInput.value.length;
         charCount.textContent = len;
-        charCount.style.color = len >= 20 ? 'var(--emerald)' : 'var(--red)';
+        charCount.style.color = len >= 20 ? 'var(--emerald)' : 'var(--rose)';
     });
 }
 
@@ -262,11 +408,11 @@ function renderFilePreviews() {
         div.className = 'file-preview-item mt-2';
         div.innerHTML = `
             <div class="flex items-center gap-2 overflow-hidden">
-                <i class="fas fa-file-image text-blue-400"></i>
+                <i class="fas fa-file-image" style="color:var(--teal)"></i>
                 <span class="truncate font-mono text-xs">${Sanitizer.escapeHtml(file.name)}</span>
-                <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold whitespace-nowrap">EXIF entfernt ✓</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full font-bold whitespace-nowrap" style="background:var(--emerald-subtle);color:var(--emerald)">EXIF entfernt ✓</span>
             </div>
-            <button type="button" class="text-red-400 hover:text-red-300 p-1 remove-file-btn" data-index="${index}" aria-label="Datei entfernen">
+            <button type="button" class="text-rose-400 hover:text-rose-300 p-1 remove-file-btn" data-index="${index}" aria-label="Datei entfernen">
                 <i class="fas fa-trash-alt text-xs"></i>
             </button>
         `;
@@ -367,7 +513,7 @@ function showConfirmation(refId, cat, sev, loc) {
     if (rateInfo) rateInfo.style.display = 'none';
 
     const conf = document.getElementById('confirmation-screen');
-    conf.classList.add('show');
+    conf.classList.remove('hidden');
     document.getElementById('conf-ref-id').textContent = refId;
     document.getElementById('conf-cat').textContent = cat;
     document.getElementById('conf-sev').textContent = sev;
@@ -402,11 +548,12 @@ document.getElementById('copy-email-btn')?.addEventListener('click', () => {
 
 // New report button
 document.getElementById('new-report-btn')?.addEventListener('click', () => {
-    document.getElementById('confirmation-screen').classList.remove('show');
+    document.getElementById('confirmation-screen').classList.add('hidden');
     document.getElementById('form-card').style.display = '';
     const rateInfo = document.getElementById('rate-info');
     if (rateInfo) rateInfo.style.display = '';
     document.getElementById('report-form').reset();
+    resetChoicePills();
     document.getElementById('char-count').textContent = '0';
     updateRateLimitUI();
     document.getElementById('report').scrollIntoView({ behavior: 'smooth' });
@@ -443,7 +590,7 @@ if (statusBtn && statusInput) {
                 const statusMap = {
                     received: { text: t.status_received, cls: 'badge-received' },
                     review:   { text: t.status_review,   cls: 'badge-review' },
-                    action:   { text: t.status_action || 'Maßnahme', cls: 'badge-action' },
+                    action:   { text: t.status_action || 'Maßnahme ergriffen', cls: 'badge-action' },
                     resolved: { text: t.status_resolved, cls: 'badge-resolved' }
                 };
 
@@ -481,20 +628,20 @@ function renderFollowUpMessages(messages) {
     thread.innerHTML = '';
 
     if (!messages.length) {
-        thread.innerHTML = '<div class="text-slate-500 text-center py-2 text-xs">Noch keine Nachrichten ausgetauscht.</div>';
+        thread.innerHTML = '<div class="text-center py-3 text-xs" style="color:var(--text-muted)">Noch keine Nachrichten ausgetauscht.</div>';
         return;
     }
 
     messages.forEach(m => {
         const isTeam = m.sender === 'team';
         const bubble = document.createElement('div');
-        bubble.className = `p-2.5 rounded-xl max-w-[85%] text-xs ${isTeam ? 'bg-blue-600/20 border border-blue-500/30 text-blue-100 mr-auto' : 'bg-slate-800 border border-slate-700 text-slate-200 ml-auto'}`;
+        bubble.className = `p-3 rounded-2xl max-w-[85%] text-xs ${isTeam ? 'chat-bubble-team mr-auto' : 'chat-bubble-user ml-auto'}`;
         bubble.innerHTML = `
-            <div class="flex justify-between items-center gap-3 text-[10px] text-slate-400 mb-1">
+            <div class="flex justify-between items-center gap-3 text-[10px] mb-1.5" style="color:var(--text-muted)">
                 <span class="font-bold">${isTeam ? 'Awareness Team' : 'Deine Nachricht'}</span>
                 <span>${new Date(m.created_at || m.ts || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
-            <div>${Sanitizer.escapeHtml(m.message || m.text)}</div>
+            <div class="leading-relaxed">${Sanitizer.escapeHtml(m.message || m.text)}</div>
         `;
         thread.appendChild(bubble);
     });
@@ -524,5 +671,8 @@ document.getElementById('user-chat-form')?.addEventListener('submit', async (e) 
 
 // ── INITIALIZATION ────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+    initQuickExit();
+    initChoicePills();
     applyLang('de');
 });
