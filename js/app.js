@@ -264,10 +264,47 @@ function resetChoicePills() {
 }
 
 // ── GLOSSARY ──────────────────────────────────────────────────────────────────
-function buildGlossary(lang) {
+let currentGlossaryFilter = '';
+
+function buildGlossary(lang, filter = currentGlossaryFilter) {
     const list = document.getElementById('glossary-list');
     if (!list) return;
-    const terms = glossary[lang] || glossary.de;
+    const allTerms = glossary[lang] || glossary.de;
+    const q = (filter || '').trim().toLowerCase();
+
+    const terms = q
+        ? allTerms.filter(item => 
+            (item.term && item.term.toLowerCase().includes(q)) ||
+            (item.tag && item.tag.toLowerCase().includes(q)) ||
+            (item.def && item.def.toLowerCase().includes(q))
+          )
+        : allTerms;
+
+    const t = T[lang] || T.de;
+
+    if (terms.length === 0) {
+        list.innerHTML = `
+            <div class="card p-8 text-center" style="color:var(--text-secondary)">
+                <i class="fas fa-search text-2xl mb-2 opacity-40" aria-hidden="true"></i>
+                <p class="text-sm">${Sanitizer.escapeHtml(t.gloss_empty || 'Kein passender Begriff gefunden.')}</p>
+                <button type="button" id="glossary-reset-filter" class="mt-3 text-xs font-bold underline cursor-pointer" style="color:var(--teal)">
+                    ${Sanitizer.escapeHtml(t.gloss_reset || 'Filter zurücksetzen')}
+                </button>
+            </div>
+        `;
+        const resetBtn = document.getElementById('glossary-reset-filter');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                const searchInput = document.getElementById('glossary-search');
+                if (searchInput) searchInput.value = '';
+                const clearBtn = document.getElementById('glossary-search-clear');
+                if (clearBtn) clearBtn.classList.add('hidden');
+                currentGlossaryFilter = '';
+                buildGlossary(currentLang, '');
+            });
+        }
+        return;
+    }
 
     list.innerHTML = terms.map((item, index) => `
         <div class="gloss-term card p-5" data-index="${index}" tabindex="0" role="button" aria-expanded="false">
@@ -276,32 +313,63 @@ function buildGlossary(lang) {
                     <span class="gloss-tag">${Sanitizer.escapeHtml(item.tag)}</span>
                     <span class="font-bold" style="color:var(--text-primary)">${Sanitizer.escapeHtml(item.term)}</span>
                 </div>
-                <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)" id="gloss-chevron-${index}"></i>
+                <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)"></i>
             </div>
-            <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)" id="gloss-body-${index}">
+            <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)">
                 ${Sanitizer.escapeHtml(item.def)}
             </div>
         </div>
     `).join('');
+}
 
-    list.querySelectorAll('.gloss-term').forEach(termEl => {
-        const idx = termEl.dataset.index;
-        const toggle = () => {
-            const body = document.getElementById(`gloss-body-${idx}`);
-            const chev = document.getElementById(`gloss-chevron-${idx}`);
+function initGlossary() {
+    const list = document.getElementById('glossary-list');
+    if (list) {
+        list.addEventListener('click', (e) => {
+            const termEl = e.target.closest('.gloss-term');
+            if (!termEl) return;
+            const body = termEl.querySelector('.gloss-body');
+            const chev = termEl.querySelector('.fa-chevron-down');
+            if (!body) return;
             const isOpen = body.classList.toggle('open');
             termEl.setAttribute('aria-expanded', isOpen);
             if (chev) chev.style.transform = isOpen ? 'rotate(180deg)' : '';
-        };
+        });
 
-        termEl.addEventListener('click', toggle);
-        termEl.addEventListener('keydown', (e) => {
+        list.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                toggle();
+                const termEl = e.target.closest('.gloss-term');
+                if (termEl) {
+                    e.preventDefault();
+                    termEl.click();
+                }
             }
         });
-    });
+    }
+
+    const searchInput = document.getElementById('glossary-search');
+    const clearBtn = document.getElementById('glossary-search-clear');
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            currentGlossaryFilter = searchInput.value;
+            if (clearBtn) {
+                clearBtn.classList.toggle('hidden', !searchInput.value.trim());
+            }
+            buildGlossary(currentLang, currentGlossaryFilter);
+        });
+    }
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            if (searchInput) {
+                searchInput.value = '';
+                searchInput.focus();
+            }
+            clearBtn.classList.add('hidden');
+            currentGlossaryFilter = '';
+            buildGlossary(currentLang, '');
+        });
+    }
 }
 
 // ── RATE LIMIT UI ─────────────────────────────────────────────────────────────
@@ -740,9 +808,16 @@ document.getElementById('user-chat-form')?.addEventListener('submit', async (e) 
 });
 
 // ── INITIALIZATION ────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+function init() {
     initTheme();
     initQuickExit();
     initChoicePills();
+    initGlossary();
     applyLang('de');
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}

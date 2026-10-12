@@ -79,6 +79,10 @@ def run():
         status, body = invoke_request("GET", asset)
         assert status == 200, f"Expected 200 for {asset}, got {status}"
         assert len(body) > 0, f"Empty body for {asset}"
+        if asset == '/index.html':
+            assert b'id="glossary-list"' in body, "glossary-list missing in index.html"
+            assert b'gloss-term card' in body, "Pre-rendered glossary cards missing in index.html"
+            assert b'id="glossary-search"' in body, "glossary-search input missing in index.html"
         print(f"  ✓ 0. GET {asset}: 200 OK ({len(body)} bytes)")
 
     # 1. Test POST /api/reports (Submit Incident)

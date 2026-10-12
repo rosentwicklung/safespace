@@ -596,9 +596,215 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-xs font-bold tracking-widest uppercase text-center mb-2" style="color:var(--teal)" data-i18n="gloss_label">Wissen & Schutz</div>
         <h2 id="gloss-heading" class="text-3xl font-extrabold text-center mb-4" style="color:var(--text-primary)" data-i18n="gloss_title">Awareness-Glossar</h2>
-        <p class="text-center mb-12 text-sm max-w-2xl mx-auto" style="color:var(--text-secondary)" data-i18n="gloss_sub">Wichtige Begriffe verständlich erklärt – für Orientierung und gemeinsame Sprache.</p>
+        <p class="text-center mb-8 text-sm max-w-2xl mx-auto" style="color:var(--text-secondary)" data-i18n="gloss_sub">Wichtige Begriffe verständlich erklärt – für Orientierung und gemeinsame Sprache.</p>
+
+        <!-- Search filter -->
+        <div class="mb-8 relative max-w-md mx-auto">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none" style="color:var(--text-muted)">
+                <i class="fas fa-search text-xs" aria-hidden="true"></i>
+            </div>
+            <input type="text" id="glossary-search" class="w-full pl-9 pr-9 py-2.5 rounded-xl text-xs sm:text-sm" placeholder="Begriff suchen (z. B. Konsens, Luisa, Spiking)..." data-i18n-ph="gloss_search_ph" style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--text-primary)" aria-label="Glossar durchsuchen">
+            <button type="button" id="glossary-search-clear" class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center cursor-pointer" style="color:var(--text-muted)" aria-label="Suche zurücksetzen">
+                <i class="fas fa-times-circle text-sm" aria-hidden="true"></i>
+            </button>
+        </div>
+
         <div class="space-y-3" id="glossary-list">
-            <!-- Dynamically populated -->
+            <!-- Pre-rendered German Awareness Glossary (fallback & instant render) -->
+            <div class="gloss-term card p-5" data-index="0" tabindex="0" role="button" aria-expanded="false">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="gloss-tag">Konzept</span>
+                        <span class="font-bold" style="color:var(--text-primary)">SafeSpace</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)" aria-hidden="true"></i>
+                </div>
+                <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)">
+                    Ein SafeSpace (sicherer Raum) ist ein Ort oder eine Situation, in der sich alle Menschen unabhängig von Herkunft, Geschlecht, Sexualität oder Aussehen sicher und respektiert fühlen. Bei Events bezeichnet es Bereiche oder Strukturen, die aktiv gegen Diskriminierung und Übergriffe vorgehen.
+                </div>
+            </div>
+
+            <div class="gloss-term card p-5" data-index="1" tabindex="0" role="button" aria-expanded="false">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="gloss-tag">Event</span>
+                        <span class="font-bold" style="color:var(--text-primary)">Awareness-Team</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)" aria-hidden="true"></i>
+                </div>
+                <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)">
+                    Ein Awareness-Team ist eine Gruppe geschulter Personen auf Veranstaltungen, die als Ansprechpartner:innen für Personen bereitstehen, die Diskriminierung, Belästigung oder andere Probleme erlebt haben. Sie sind erkennbar, neutral und verschwiegenheitsverpflichtet.
+                </div>
+            </div>
+
+            <div class="gloss-term card p-5" data-index="2" tabindex="0" role="button" aria-expanded="false">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="gloss-tag">Verhalten</span>
+                        <span class="font-bold" style="color:var(--text-primary)">Konsens</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)" aria-hidden="true"></i>
+                </div>
+                <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)">
+                    Konsens bedeutet, dass alle beteiligten Personen einer Handlung oder Interaktion freiwillig, informiert und ohne Druck zustimmen. Konsens muss aktiv und eindeutig sein – Schweigen oder Passivität ist kein Konsens. Konsens kann jederzeit widerrufen werden.
+                </div>
+            </div>
+
+            <div class="gloss-term card p-5" data-index="3" tabindex="0" role="button" aria-expanded="false">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="gloss-tag">Sicherheit</span>
+                        <span class="font-bold" style="color:var(--text-primary)">K.-o.-Tropfen & Spiking</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)" aria-hidden="true"></i>
+                </div>
+                <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)">
+                    Das heimliche Verabreichen betäubender Substanzen (z. B. GHB, GBL, Ketamin, Benzodiazepine) in Drinks oder durch Nadelstiche ('Needle Spiking'). Symptome sind plötzlicher Schwindel, Übelkeit, Willenlosigkeit oder Erinnerungslücken. Bei Verdacht: Sofort Freund:innen, Barpersonal oder das Awareness-Team ansprechen und medizinische Hilfe rufen. Lass Getränke nie unbeaufsichtigt.
+                </div>
+            </div>
+
+            <div class="gloss-term card p-5" data-index="4" tabindex="0" role="button" aria-expanded="false">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="gloss-tag">Hilfe-Code</span>
+                        <span class="font-bold" style="color:var(--text-primary)">„Ist Luisa hier?“</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)" aria-hidden="true"></i>
+                </div>
+                <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)">
+                    Ein bundesweites Hilfs- und Schutzangebot im Nachtleben. Wer sich belästigt, bedrängt oder unsicher fühlt, kann an der Bar oder beim Personal fragen: 'Ist Luisa hier?'. Das Personal weiß Bescheid und bringt die Person ohne Aufsehen in einen geschützten Raum oder organisiert ein sicheres Taxi.
+                </div>
+            </div>
+
+            <div class="gloss-term card p-5" data-index="5" tabindex="0" role="button" aria-expanded="false">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="gloss-tag">Belästigung</span>
+                        <span class="font-bold" style="color:var(--text-primary)">Catcalling</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)" aria-hidden="true"></i>
+                </div>
+                <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)">
+                    Aufdringliche, sexualisierte Zurufe, Hinterherpfeifen, aufdrängende Gesten oder sexistische Kommentare im Club oder im öffentlichen Raum. Es ist eine Form verbaler sexueller Belästigung und eine Grenzüberschreitung – niemals ein 'Kompliment'.
+                </div>
+            </div>
+
+            <div class="gloss-term card p-5" data-index="6" tabindex="0" role="button" aria-expanded="false">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="gloss-tag">Verhalten</span>
+                        <span class="font-bold" style="color:var(--text-primary)">Victim Blaming</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)" aria-hidden="true"></i>
+                </div>
+                <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)">
+                    Täter-Opfer-Umkehr: Der betroffenen Person wird direkt oder indirekt eine Mitschuld an einem Übergriff gegeben (z. B. durch Vorhaltungen zu Kleidung, Alkoholkonsum oder Ausstrahlung). Die Verantwortung für einen Übergriff liegt ausnahmslos und zu 100 % bei der handelnden Person, niemals bei der betroffenen Person.
+                </div>
+            </div>
+
+            <div class="gloss-term card p-5" data-index="7" tabindex="0" role="button" aria-expanded="false">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="gloss-tag">Schutz</span>
+                        <span class="font-bold" style="color:var(--text-primary)">Retraumatisierung</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)" aria-hidden="true"></i>
+                </div>
+                <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)">
+                    Das schmerzhafte Wiedererleben eines früheren Traumas durch auslösende Reize (Trigger) oder unbedachte Befragungen. Awareness-Teams arbeiten traumasensibel: Betroffene müssen ihren Vorfall nicht detailliert wiederholen und behalten die volle Kontrolle über tempo und Maßnahmen.
+                </div>
+            </div>
+
+            <div class="gloss-term card p-5" data-index="8" tabindex="0" role="button" aria-expanded="false">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="gloss-tag">Verhalten</span>
+                        <span class="font-bold" style="color:var(--text-primary)">Club-Etikette</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)" aria-hidden="true"></i>
+                </div>
+                <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)">
+                    Club-Etikette bezeichnet Verhaltensregeln in Clubs und auf Festivals: Nicht ungefragt fotografieren, Personen beim Tanzen nicht ungefragt anfassen, persönliche Grenzen respektieren, keine Handys auf der Tanzfläche, Warteschlangen respektieren und Konflikte deeskalieren.
+                </div>
+            </div>
+
+            <div class="gloss-term card p-5" data-index="9" tabindex="0" role="button" aria-expanded="false">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="gloss-tag">Identität</span>
+                        <span class="font-bold" style="color:var(--text-primary)">Queer</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)" aria-hidden="true"></i>
+                </div>
+                <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)">
+                    Queer ist ein Sammelbegriff für Menschen, die sich nicht in heterosexuelle oder binäre Geschlechternormen einordnen. Der Begriff wurde früher abwertend verwendet, ist aber heute von vielen als positive Selbstbezeichnung zurückerobert worden.
+                </div>
+            </div>
+
+            <div class="gloss-term card p-5" data-index="10" tabindex="0" role="button" aria-expanded="false">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="gloss-tag">Identität</span>
+                        <span class="font-bold" style="color:var(--text-primary)">LGBTQIA+</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)" aria-hidden="true"></i>
+                </div>
+                <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)">
+                    Das Akronym steht für Lesbian, Gay, Bisexual, Transgender, Queer/Questioning, Intersex, Asexual und weitere (+). Es beschreibt das breite Spektrum von Geschlechtsidentitäten und sexuellen Orientierungen jenseits der Heteronormativität.
+                </div>
+            </div>
+
+            <div class="gloss-term card p-5" data-index="11" tabindex="0" role="button" aria-expanded="false">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="gloss-tag">Diskriminierung</span>
+                        <span class="font-bold" style="color:var(--text-primary)">Microaggression</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)" aria-hidden="true"></i>
+                </div>
+                <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)">
+                    Microaggressionen sind alltägliche, subtile verbale oder nonverbale Verhaltensweisen, die Angehörige marginalisierter Gruppen herabsetzen oder ausschließen – oft unbewusst. Beispiele: 'Du sprichst aber gut Deutsch' oder das Übergehen bei Gruppenentscheidungen.
+                </div>
+            </div>
+
+            <div class="gloss-term card p-5" data-index="12" tabindex="0" role="button" aria-expanded="false">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="gloss-tag">Solidarität</span>
+                        <span class="font-bold" style="color:var(--text-primary)">Ally</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)" aria-hidden="true"></i>
+                </div>
+                <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)">
+                    Ein Ally (Verbündete:r) ist eine Person, die sich für die Rechte und das Wohlergehen von marginalisierten Gruppen einsetzt, obwohl sie selbst nicht dieser Gruppe angehört. Allyship bedeutet aktiv zuhören, lernen und eigene Privilegien reflektieren.
+                </div>
+            </div>
+
+            <div class="gloss-term card p-5" data-index="13" tabindex="0" role="button" aria-expanded="false">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="gloss-tag">Diskriminierung</span>
+                        <span class="font-bold" style="color:var(--text-primary)">Bodyshaming</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)" aria-hidden="true"></i>
+                </div>
+                <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)">
+                    Bodyshaming bezeichnet abwertende Kommentare oder Verhaltensweisen, die sich negativ auf das Äußere einer Person beziehen – unabhängig von Körpergröße, Gewicht, Hautfarbe oder Merkmalen. Es verletzt die persönliche Würde.
+                </div>
+            </div>
+
+            <div class="gloss-term card p-5" data-index="14" tabindex="0" role="button" aria-expanded="false">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="gloss-tag">Verhalten</span>
+                        <span class="font-bold" style="color:var(--text-primary)">Gaslighting</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-sm transition-transform" style="color:var(--text-muted)" aria-hidden="true"></i>
+                </div>
+                <div class="gloss-body mt-3 text-sm leading-relaxed" style="color:var(--text-secondary)">
+                    Gaslighting ist eine Form psychischer Manipulation, bei der eine Person dazu gebracht wird, ihre eigene Wahrnehmung, Erinnerung oder ihr Urteil zu bezweifeln. Sätze wie 'Das war doch nur Spaß' oder 'Du bildest dir das ein' nach Grenzüberschreitungen können Gaslighting sein.
+                </div>
+            </div>
         </div>
     </div>
 </section>
