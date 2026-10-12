@@ -1,3 +1,7 @@
+[build]
+  publish = "."
+
+# Global Security & Privacy Headers
 [[headers]]
   for = "/*"
   [headers.values]
@@ -5,28 +9,35 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "geolocation=(), camera=(), microphone=()"
+    Permissions-Policy = "geolocation=(), camera=(), microphone=(), payment=()"
 
+# Service Worker - Always fetch fresh version
 [[headers]]
   for = "/sw.js"
   [headers.values]
-    Cache-Control = "no-cache"
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Content-Type = "application/javascript; charset=utf-8"
 
+# PWA Manifest
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json; charset=utf-8"
+    Cache-Control = "public, max-age=86400"
+
+# Static Assets Caching
 [[headers]]
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# Redirects & Rewrites
+# Admin Route Rewrites
 [[redirects]]
   from = "/admin"
   to = "/admin/index.html"
   status = 200
 
-# Optional backend proxy: To connect Netlify to a self-hosted or cloud backend (e.g. Render / Fly.io),
-# uncomment the block below with your deployed backend server address:
-# [[redirects]]
-#   from = "/api/*"
-#   to = "https://api.safespace-bremen.de/api/:splat"
-#   status = 200
-#   force = true
+[[redirects]]
+  from = "/admin/"
+  to = "/admin/index.html"
+  status = 200

@@ -1,0 +1,16 @@
+# Netlify Ignore - Prevent backend, databases and internal tools from being published
+server.py
+test_suite.py
+__pycache__/
+*.py
+*.pyc
+
+# Local SQLite databases and uploads
+data/
+uploads/
+
+# Version control and OS files
+.git/
+.gitignore
+.DS_Store
+Thumbs.db
